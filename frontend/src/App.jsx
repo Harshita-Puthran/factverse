@@ -11,6 +11,7 @@ import { UserQuestions } from './components/UserQuestions.jsx';
 import { CrowdFeedback } from './components/CrowdFeedback.jsx';
 import { EcosystemDiagram } from './components/EcosystemDiagram.jsx';
 import { InteractiveLogo } from './components/InteractiveLogo.jsx';
+import { FileText, Filter, Shield, CheckCircle, HelpCircle, Users, X, Menu } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
