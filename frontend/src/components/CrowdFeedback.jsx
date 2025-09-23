@@ -700,133 +700,140 @@ export function CrowdFeedback() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Leaderboard Stats */}
+          <div className="grid md:grid-cols-3 gap-4">
+            <Card className="border border-yellow-500/20 bg-gradient-to-br from-yellow-500/10 to-amber-500/10 backdrop-blur-sm p-4 text-center">
+              <Award className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+              <div className="text-white">Most Active</div>
+              <div className="text-yellow-400 text-lg font-medium">Alex Rodriguez</div>
+              <div className="text-xs text-white/60">134 contributions this month</div>
+            </Card>
+            <Card className="border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-green-500/10 backdrop-blur-sm p-4 text-center">
+              <Target className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+              <div className="text-white">Most Accurate</div>
+              <div className="text-emerald-400 text-lg font-medium">Prof. Maria Garcia</div>
+              <div className="text-xs text-white/60">96% accuracy rate</div>
+            </Card>
+            <Card className="border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-sm p-4 text-center">
+              <Star className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+              <div className="text-white">Rising Star</div>
+              <div className="text-blue-400 text-lg font-medium">Dr. Sarah Chen</div>
+              <div className="text-xs text-white/60">+250 points this week</div>
+            </Card>
+          </div>
         </TabsContent>
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="border border-white/20 bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-transparent backdrop-blur-xl">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl text-blue-400 mb-1">2,847</div>
-                <div className="text-white/60 text-sm">Total Reviews</div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Community Stats */}
+            <Card className="border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <BarChart3 className="w-5 h-5 text-blue-400" />
+                  Community Stats
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/80">Total Submissions</span>
+                    <span className="text-blue-400 font-medium">1,247</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/80">Active Reviewers</span>
+                    <span className="text-emerald-400 font-medium">342</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/80">Consensus Reached</span>
+                    <span className="text-purple-400 font-medium">89%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/80">Avg. Response Time</span>
+                    <span className="text-orange-400 font-medium">4.2 hours</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-            <Card className="border border-white/20 bg-gradient-to-br from-emerald-500/10 via-green-500/5 to-transparent backdrop-blur-xl">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl text-emerald-400 mb-1">1,456</div>
-                <div className="text-white/60 text-sm">Active Reviewers</div>
-              </CardContent>
-            </Card>
-            <Card className="border border-white/20 bg-gradient-to-br from-purple-500/10 via-violet-500/5 to-transparent backdrop-blur-xl">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl text-purple-400 mb-1">87%</div>
-                <div className="text-white/60 text-sm">Consensus Rate</div>
-              </CardContent>
-            </Card>
-            <Card className="border border-white/20 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent backdrop-blur-xl">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl text-orange-400 mb-1">4.2</div>
-                <div className="text-white/60 text-sm">Avg Quality Score</div>
+
+            {/* Quality Metrics */}
+            <Card className="border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Target className="w-5 h-5 text-emerald-400" />
+                  Quality Metrics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-white/80 text-sm">Overall Accuracy</span>
+                      <span className="text-emerald-400 text-sm">92%</span>
+                    </div>
+                    <Progress value={92} className="h-2" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-white/80 text-sm">Source Credibility</span>
+                      <span className="text-blue-400 text-sm">88%</span>
+                    </div>
+                    <Progress value={88} className="h-2" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-white/80 text-sm">Bias Detection</span>
+                      <span className="text-purple-400 text-sm">85%</span>
+                    </div>
+                    <Progress value={85} className="h-2" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-white/80 text-sm">Community Agreement</span>
+                      <span className="text-amber-400 text-sm">91%</span>
+                    </div>
+                    <Progress value={91} className="h-2" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Quality Distribution */}
+          {/* Category Breakdown */}
           <Card className="border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
-                <BarChart3 className="w-5 h-5 text-purple-400" />
-                Quality Distribution
+                <Globe className="w-5 h-5 text-cyan-400" />
+                Category Breakdown
               </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                { label: 'Excellent (4.5-5.0)', value: 32, color: 'bg-emerald-500' },
-                { label: 'Good (3.5-4.4)', value: 45, color: 'bg-blue-500' },
-                { label: 'Fair (2.5-3.4)', value: 18, color: 'bg-amber-500' },
-                { label: 'Poor (1.0-2.4)', value: 5, color: 'bg-red-500' }
-              ].map((item, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80">{item.label}</span>
-                    <span className="text-white/60">{item.value}%</span>
-                  </div>
-                  <Progress value={item.value} className="h-2" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <Clock className="w-5 h-5 text-cyan-400" />
-                Recent Community Activity
-              </CardTitle>
+              <CardDescription className="text-white/60">
+                Submission distribution across content categories
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="grid md:grid-cols-5 gap-4">
                 {[
-                  { action: "New submission reviewed", user: "Dr. Sarah Chen", time: "2 minutes ago" },
-                  { action: "Consensus reached on health article", user: "Community", time: "15 minutes ago" },
-                  { action: "Content flagged for review", user: "Alex Rodriguez", time: "1 hour ago" },
-                  { action: "Quality threshold achieved", user: "Prof. Maria Garcia", time: "2 hours ago" }
-                ].map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between text-sm">
-                    <div>
-                      <span className="text-white/80">{activity.action}</span>
-                      <span className="text-blue-400 ml-1">by {activity.user}</span>
+                  { name: 'Health', count: 312, percentage: 25, color: 'bg-purple-500' },
+                  { name: 'Technology', count: 278, percentage: 22, color: 'bg-orange-500' },
+                  { name: 'Environment', count: 249, percentage: 20, color: 'bg-green-500' },
+                  { name: 'Economics', count: 187, percentage: 15, color: 'bg-blue-500' },
+                  { name: 'Politics', count: 221, percentage: 18, color: 'bg-red-500' }
+                ].map((category) => (
+                  <Card key={category.name} className="border border-white/20 bg-white/5 backdrop-blur-sm p-4 text-center">
+                    <div className={`w-12 h-12 ${category.color}/20 rounded-lg flex items-center justify-center mx-auto mb-2`}>
+                      <Brain className={`w-6 h-6 ${category.color.replace('bg-', 'text-')}`} />
                     </div>
-                    <span className="text-white/60">{activity.time}</span>
-                  </div>
+                    <div className="text-white font-medium">{category.name}</div>
+                    <div className="text-2xl text-white font-medium">{category.count}</div>
+                    <div className="text-xs text-white/60">{category.percentage}% of total</div>
+                  </Card>
                 ))}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* How It Works */}
-      <Card className="border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <Brain className="w-5 h-5 text-purple-400" />
-            How Crowd Feedback Works
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto">
-                <Users className="w-6 h-6 text-blue-400" />
-              </div>
-              <h4 className="text-white">Community Review</h4>
-              <p className="text-white/60 text-sm">
-                Multiple users evaluate content for accuracy, credibility, and bias
-              </p>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mx-auto">
-                <Target className="w-6 h-6 text-cyan-400" />
-              </div>
-              <h4 className="text-white">Consensus Building</h4>
-              <p className="text-white/60 text-sm">
-                Aggregated ratings create reliable quality scores and consensus
-              </p>
-            </div>
-            <div className="text-center space-y-2">
-              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto">
-                <Zap className="w-6 h-6 text-purple-400" />
-              </div>
-              <h4 className="text-white">Quality Assurance</h4>
-              <p className="text-white/60 text-sm">
-                High-quality content is promoted while problematic content is flagged
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

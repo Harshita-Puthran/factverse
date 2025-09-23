@@ -646,39 +646,40 @@ export function UserQuestions() {
 
             {/* Best Answer */}
             {selectedQuestion.bestAnswer && (
-              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="space-y-3">
+                <h4 className="text-white flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-emerald-400" />
-                  <span className="text-emerald-300 text-sm font-medium">Best Answer</span>
-                </div>
-                <p className="text-white/90 mb-3">{selectedQuestion.bestAnswer.content}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-xs">
-                      {selectedQuestion.bestAnswer.author.avatar}
-                    </Avatar>
-                    <span className="text-white/80">{selectedQuestion.bestAnswer.author.name}</span>
-                    {selectedQuestion.bestAnswer.author.isVerified && (
-                      <CheckCircle className="w-3 h-3 text-cyan-400" />
-                    )}
-                    {getRoleIcon(selectedQuestion.bestAnswer.author.role)}
-                  </div>
-                  <div className="flex items-center gap-2 text-white/60">
-                    <ThumbsUp className="w-3 h-3" />
-                    <span>{selectedQuestion.bestAnswer.votes}</span>
-                  </div>
-                </div>
+                  Best Answer
+                </h4>
+                <Card className="border border-emerald-500/20 bg-emerald-500/10 backdrop-blur-sm">
+                  <CardContent className="p-4">
+                    <p className="text-white/90 mb-3">{selectedQuestion.bestAnswer.content}</p>
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-xs">
+                          {selectedQuestion.bestAnswer.author.avatar}
+                        </Avatar>
+                        <span className="text-white/80">{selectedQuestion.bestAnswer.author.name}</span>
+                        {selectedQuestion.bestAnswer.author.isVerified && (
+                          <CheckCircle className="w-3 h-3 text-cyan-400" />
+                        )}
+                        {getRoleIcon(selectedQuestion.bestAnswer.author.role)}
+                      </div>
+                      <div className="flex items-center gap-2 text-white/60">
+                        <ArrowUp className="w-3 h-3 text-emerald-400" />
+                        <span>{selectedQuestion.bestAnswer.votes}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
 
             {/* Answer Form */}
             <div className="space-y-3">
-              <h4 className="text-white flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 text-amber-400" />
-                Your Answer
-              </h4>
+              <h4 className="text-white">Your Answer</h4>
               <Textarea
-                placeholder="Share your knowledge and help others..."
+                placeholder="Share your knowledge and help the community..."
                 value={newAnswer}
                 onChange={(e) => setNewAnswer(e.target.value)}
                 rows={4}
@@ -687,7 +688,7 @@ export function UserQuestions() {
               <Button
                 onClick={submitAnswer}
                 disabled={!newAnswer.trim()}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white disabled:opacity-50"
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium h-11 transition-all duration-300 disabled:opacity-50"
               >
                 Post Answer
               </Button>
@@ -695,36 +696,6 @@ export function UserQuestions() {
           </CardContent>
         </Card>
       )}
-
-      {/* Community Stats */}
-      <Card className="border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <MessageSquare className="w-5 h-5 text-orange-400" />
-            Community Statistics
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="text-center space-y-1">
-              <div className="text-2xl text-amber-400">1,247</div>
-              <div className="text-white/60 text-sm">Total Questions</div>
-            </div>
-            <div className="text-center space-y-1">
-              <div className="text-2xl text-emerald-400">3,891</div>
-              <div className="text-white/60 text-sm">Answers Provided</div>
-            </div>
-            <div className="text-center space-y-1">
-              <div className="text-2xl text-blue-400">567</div>
-              <div className="text-white/60 text-sm">Active Members</div>
-            </div>
-            <div className="text-center space-y-1">
-              <div className="text-2xl text-purple-400">92%</div>
-              <div className="text-white/60 text-sm">Resolution Rate</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

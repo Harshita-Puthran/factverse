@@ -8,298 +8,268 @@ import {
   CheckCircle, 
   HelpCircle, 
   Users,
+  ArrowRight,
   Zap,
+  Target,
   Brain,
   Globe,
-  TrendingUp,
-  Clock,
-  Star
+  Eye,
+  TrendingUp
 } from 'lucide-react';
 
-export function EcosystemDiagram({ onSectionClick }) {
-  const [hoveredSection, setHoveredSection] = useState(null);
-  const [animationStep, setAnimationStep] = useState(0);
-  const [activeConnections, setActiveConnections] = useState([]);
+export function EcosystemDiagram({ onSectionSelect }) {
+  const [activeNode, setActiveNode] = useState(null);
+  const [connectionLines, setConnectionLines] = useState([]);
+  const [animationPhase, setAnimationPhase] = useState(0);
+
+  // Define the ecosystem nodes
+  const ecosystemNodes = [
+    {
+      id: 'filter',
+      title: 'Filter News',
+      description: 'Smart filtering by source credibility and topic relevance',
+      icon: Filter,
+      position: { x: 20, y: 30 },
+      color: 'from-cyan-500 to-blue-500',
+      connections: ['detect', 'summarize'],
+      stats: { processed: '12.4K', accuracy: '94%' }
+    },
+    {
+      id: 'detect',
+      title: 'Detect Fake News',
+      description: 'AI-powered analysis to identify misinformation patterns',
+      icon: Shield,
+      position: { x: 70, y: 20 },
+      color: 'from-red-500 to-pink-500',
+      connections: ['validate', 'feedback'],
+      stats: { detected: '2.1K', accuracy: '92%' }
+    },
+    {
+      id: 'summarize',
+      title: 'Summarize Articles',
+      description: 'Extract key insights and generate concise summaries',
+      icon: FileText,
+      position: { x: 15, y: 70 },
+      color: 'from-emerald-500 to-green-500',
+      connections: ['validate', 'questions'],
+      stats: { summarized: '8.7K', saved: '45min' }
+    },
+    {
+      id: 'validate',
+      title: 'Validate Facts',
+      description: 'Cross-reference claims with trusted databases',
+      icon: CheckCircle,
+      position: { x: 70, y: 75 },
+      color: 'from-violet-500 to-purple-500',
+      connections: ['questions', 'feedback'],
+      stats: { validated: '15.2K', sources: '340' }
+    },
+    {
+      id: 'questions',
+      title: 'User Questions',
+      description: 'Community-driven Q&A and expert discussions',
+      icon: HelpCircle,
+      position: { x: 45, y: 40 },
+      color: 'from-amber-500 to-orange-500',
+      connections: ['feedback'],
+      stats: { answered: '3.8K', experts: '156' }
+    },
+    {
+      id: 'feedback',
+      title: 'Crowd Feedback',
+      description: 'Collaborative rating and community validation',
+      icon: Users,
+      position: { x: 45, y: 60 },
+      color: 'from-sky-500 to-blue-500',
+      connections: [],
+      stats: { contributors: '2.4K', consensus: '89%' }
+    }
+  ];
+
+  // Central hub properties
+  const centralHub = {
+    title: 'FactVerse',
+    description: 'AI-Powered News Verification Ecosystem',
+    position: { x: 50, y: 50 },
+    radius: 80
+  };
 
   // Animation cycle
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimationStep(prev => (prev + 1) % 6);
+      setAnimationPhase(prev => (prev + 1) % 6);
     }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  // Connection animation
+  // Generate connection paths
   useEffect(() => {
-    const connections = [
-      [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], // Outer ring
-      [0, 3], [1, 4], [2, 5] // Cross connections
-    ];
-    
-    const timer = setTimeout(() => {
-      setActiveConnections(connections[animationStep] || []);
-    }, 200);
-    
-    return () => clearTimeout(timer);
-  }, [animationStep]);
+    const lines = [];
+    ecosystemNodes.forEach(node => {
+      node.connections.forEach(targetId => {
+        const target = ecosystemNodes.find(n => n.id === targetId);
+        if (target) {
+          lines.push({
+            from: node.position,
+            to: target.position,
+            active: activeNode === node.id || activeNode === targetId
+          });
+        }
+      });
+    });
+    setConnectionLines(lines);
+  }, [activeNode]);
 
-  const ecosystemSections = [
-    {
-      id: 'filter',
-      label: 'Filter News',
-      icon: Filter,
-      description: 'Smart filtering by source, topic, and credibility',
-      position: { x: 50, y: 15 }, // Top center
-      color: 'from-cyan-500 to-blue-500',
-      iconColor: 'text-cyan-300',
-      borderColor: 'border-cyan-400/30',
-      glowColor: 'shadow-cyan-500/25'
-    },
-    {
-      id: 'detect',
-      label: 'Detect Fake News',
-      icon: Shield,
-      description: 'AI-powered fake news detection and analysis',
-      position: { x: 85, y: 35 }, // Top right
-      color: 'from-red-500 to-pink-500',
-      iconColor: 'text-red-300',
-      borderColor: 'border-red-400/30',
-      glowColor: 'shadow-red-500/25'
-    },
-    {
-      id: 'summarize',
-      label: 'Summarize Articles',
-      icon: FileText,
-      description: 'Quick, intelligent article summaries',
-      position: { x: 85, y: 65 }, // Bottom right
-      color: 'from-emerald-500 to-green-500',
-      iconColor: 'text-emerald-300',
-      borderColor: 'border-emerald-400/30',
-      glowColor: 'shadow-emerald-500/25'
-    },
-    {
-      id: 'validate',
-      label: 'Validate Facts',
-      icon: CheckCircle,
-      description: 'Cross-reference facts with trusted sources',
-      position: { x: 50, y: 85 }, // Bottom center
-      color: 'from-violet-500 to-purple-500',
-      iconColor: 'text-violet-300',
-      borderColor: 'border-violet-400/30',
-      glowColor: 'shadow-violet-500/25'
-    },
-    {
-      id: 'questions',
-      label: 'User Questions',
-      icon: HelpCircle,
-      description: 'Community-driven Q&A and discussions',
-      position: { x: 15, y: 65 }, // Bottom left
-      color: 'from-amber-500 to-orange-500',
-      iconColor: 'text-amber-300',
-      borderColor: 'border-amber-400/30',
-      glowColor: 'shadow-amber-500/25'
-    },
-    {
-      id: 'feedback',
-      label: 'Crowd Feedback',
-      icon: Users,
-      description: 'Collaborative fact-checking and ratings',
-      position: { x: 15, y: 35 }, // Top left
-      color: 'from-sky-500 to-blue-500',
-      iconColor: 'text-sky-300',
-      borderColor: 'border-sky-400/30',
-      glowColor: 'shadow-sky-500/25'
-    }
-  ];
-
-  const centralFeatures = [
-    { icon: Brain, label: 'AI Intelligence', color: 'text-purple-400' },
-    { icon: Globe, label: 'Global Sources', color: 'text-blue-400' },
-    { icon: TrendingUp, label: 'Real-time Analysis', color: 'text-emerald-400' },
-    { icon: Star, label: 'Quality Assurance', color: 'text-amber-400' }
-  ];
-
-  const handleSectionClick = (sectionId) => {
-    if (onSectionClick) {
-      onSectionClick(sectionId);
+  const handleNodeClick = (nodeId) => {
+    setActiveNode(activeNode === nodeId ? null : nodeId);
+    if (onSectionSelect) {
+      onSectionSelect(nodeId);
     }
   };
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden">
-      {/* Background Grid */}
-      <div className="absolute inset-0 opacity-10">
+    <div className="relative w-full h-[600px] bg-gradient-to-br from-slate-900/50 via-purple-900/30 to-slate-900/50 rounded-xl border border-white/10 overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0">
+        {/* Grid Pattern */}
         <div 
-          className="w-full h-full"
+          className="absolute inset-0 opacity-20"
           style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
-            backgroundSize: '30px 30px'
+            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
           }}
         />
+        
+        {/* Animated Particles */}
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className={`absolute w-1 h-1 bg-cyan-400/30 rounded-full animate-float`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${3 + Math.random() * 4}s`
+            }}
+          />
+        ))}
       </div>
 
       {/* Connection Lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-            <feMerge> 
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        
-        {/* Outer Ring Connections */}
-        {ecosystemSections.map((section, index) => {
-          const nextIndex = (index + 1) % ecosystemSections.length;
-          const nextSection = ecosystemSections[nextIndex];
-          const isActive = activeConnections.includes(index) || activeConnections.includes(nextIndex);
-          
-          return (
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+        {connectionLines.map((line, index) => (
+          <g key={index}>
             <line
-              key={`ring-${index}`}
-              x1={section.position.x}
-              y1={section.position.y}
-              x2={nextSection.position.x}
-              y2={nextSection.position.y}
-              stroke={isActive ? '#60a5fa' : '#334155'}
-              strokeWidth={isActive ? "0.3" : "0.15"}
-              strokeOpacity={isActive ? 0.8 : 0.3}
-              filter={isActive ? "url(#glow)" : "none"}
-              className="transition-all duration-500"
+              x1={`${line.from.x}%`}
+              y1={`${line.from.y}%`}
+              x2={`${line.to.x}%`}
+              y2={`${line.to.y}%`}
+              stroke={line.active ? 'url(#activeGradient)' : 'rgba(255,255,255,0.1)'}
+              strokeWidth={line.active ? '2' : '1'}
+              strokeDasharray={line.active ? '0' : '5,5'}
+              className={line.active ? 'animate-pulse' : ''}
             />
-          );
-        })}
-
-        {/* Central Hub Connections */}
-        {ecosystemSections.map((section, index) => {
-          const isActive = activeConnections.includes(index);
-          return (
-            <line
-              key={`hub-${index}`}
-              x1="50"
-              y1="50"
-              x2={section.position.x}
-              y2={section.position.y}
-              stroke={isActive ? '#8b5cf6' : '#475569'}
-              strokeWidth={isActive ? "0.2" : "0.1"}
-              strokeOpacity={isActive ? 0.6 : 0.2}
-              strokeDasharray={isActive ? "2,1" : "1,2"}
-              filter={isActive ? "url(#glow)" : "none"}
-              className="transition-all duration-500"
-            />
-          );
-        })}
-
-        {/* Data Flow Animation */}
-        {ecosystemSections.map((_, index) => (
-          <circle
-            key={`flow-${index}`}
-            r="0.5"
-            fill="#60a5fa"
-            opacity="0.8"
-            className="animate-pulse"
-          >
-            <animateMotion
-              dur="4s"
-              repeatCount="indefinite"
-              begin={`${index * 0.5}s`}
-            >
-              <path d={`M50,50 L${ecosystemSections[index].position.x},${ecosystemSections[index].position.y}`} />
-            </animateMotion>
-          </circle>
+            {line.active && (
+              <circle
+                r="3"
+                fill="rgba(99, 230, 255, 0.8)"
+                className="animate-ping"
+              >
+                <animateMotion
+                  dur="2s"
+                  repeatCount="indefinite"
+                  path={`M ${line.from.x * 6} ${line.from.y * 6} L ${line.to.x * 6} ${line.to.y * 6}`}
+                />
+              </circle>
+            )}
+          </g>
         ))}
+        
+        {/* Gradient Definitions */}
+        <defs>
+          <linearGradient id="activeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgb(99, 230, 255)" />
+            <stop offset="50%" stopColor="rgb(168, 85, 247)" />
+            <stop offset="100%" stopColor="rgb(236, 72, 153)" />
+          </linearGradient>
+        </defs>
       </svg>
 
       {/* Central Hub */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <Card className="w-32 h-32 border border-white/20 bg-gradient-to-br from-white/20 via-white/10 to-transparent backdrop-blur-xl rounded-full flex items-center justify-center group hover:scale-110 transition-all duration-500">
-          <div className="absolute inset-0 bg-gradient-conic from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-full animate-spin-slow"></div>
-          <div className="relative text-center">
-            <div className="text-white mb-1">
-              <Zap className="w-8 h-8 mx-auto animate-electric-pulse" />
-            </div>
-            <div className="text-xs text-white/80 font-medium">FactVerse</div>
-            <div className="text-xs text-white/60">Core</div>
-          </div>
-          
-          {/* Orbiting Features */}
-          {centralFeatures.map((feature, index) => {
-            const angle = (index * 90) - 90; // 90 degrees apart
-            const radius = 40;
-            const x = Math.cos((angle * Math.PI) / 180) * radius;
-            const y = Math.sin((angle * Math.PI) / 180) * radius;
-            
-            return (
-              <div
-                key={index}
-                className="absolute w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm animate-particle-orbit"
-                style={{
-                  left: `calc(50% + ${x}px - 12px)`,
-                  top: `calc(50% + ${y}px - 12px)`,
-                  animationDelay: `${index * 0.5}s`,
-                  animationDuration: '8s'
-                }}
-              >
-                <feature.icon className={`w-3 h-3 ${feature.color}`} />
+      <div 
+        className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
+        style={{ left: '50%', top: '50%' }}
+      >
+        <Card className="w-32 h-32 flex items-center justify-center border-2 border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl shadow-2xl hover:scale-105 transition-all duration-500 cursor-pointer group">
+          <CardContent className="p-4 text-center">
+            <div className="relative">
+              {/* Rotating Rings */}
+              <div className="absolute inset-0 border-2 border-cyan-400/30 rounded-full animate-spin-slow"></div>
+              <div className="absolute inset-2 border border-purple-400/30 rounded-full animate-spin-reverse-slow"></div>
+              
+              {/* Central Icon */}
+              <div className="relative z-10 w-12 h-12 bg-gradient-to-br from-cyan-500/40 via-purple-500/40 to-pink-500/40 rounded-full flex items-center justify-center group-hover:animate-pulse">
+                <Brain className="w-6 h-6 text-white" />
               </div>
-            );
-          })}
+            </div>
+            
+            <div className="mt-2">
+              <h3 className="text-white text-xs font-medium">FactVerse</h3>
+              <p className="text-white/60 text-xs">AI Hub</p>
+            </div>
+          </CardContent>
         </Card>
       </div>
 
-      {/* Ecosystem Sections */}
-      {ecosystemSections.map((section, index) => {
-        const Icon = section.icon;
-        const isHighlighted = animationStep === index;
-        const isHovered = hoveredSection === section.id;
+      {/* Ecosystem Nodes */}
+      {ecosystemNodes.map((node) => {
+        const Icon = node.icon;
+        const isActive = activeNode === node.id;
+        const isHighlighted = animationPhase === ecosystemNodes.indexOf(node);
         
         return (
           <div
-            key={section.id}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
-            style={{
-              left: `${section.position.x}%`,
-              top: `${section.position.y}%`
+            key={node.id}
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
+            style={{ 
+              left: `${node.position.x}%`, 
+              top: `${node.position.y}%` 
             }}
-            onMouseEnter={() => setHoveredSection(section.id)}
-            onMouseLeave={() => setHoveredSection(null)}
-            onClick={() => handleSectionClick(section.id)}
           >
             <Card 
-              className={`w-24 h-24 border ${section.borderColor} bg-gradient-to-br ${section.color}/20 backdrop-blur-xl rounded-lg flex flex-col items-center justify-center transition-all duration-500 ${
-                isHighlighted || isHovered ? `scale-125 ${section.glowColor} shadow-xl` : 'scale-100'
-              } hover:scale-125 hover:shadow-xl group-hover:${section.glowColor}`}
+              className={`w-24 h-24 flex items-center justify-center cursor-pointer transition-all duration-500 border backdrop-blur-xl
+                ${isActive 
+                  ? 'scale-110 shadow-2xl border-white/40 bg-gradient-to-br from-white/20 via-white/10 to-transparent' 
+                  : isHighlighted
+                    ? 'scale-105 shadow-lg border-white/30 bg-gradient-to-br from-white/15 via-white/8 to-transparent animate-pulse'
+                    : 'scale-100 shadow-md border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-transparent hover:scale-105'
+                }`}
+              onClick={() => handleNodeClick(node.id)}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-lg"></div>
-              <div className="relative z-10 text-center">
-                <Icon 
-                  className={`w-6 h-6 ${section.iconColor} mx-auto mb-1 transition-all duration-300 ${
-                    isHighlighted ? 'animate-bounce' : isHovered ? 'animate-pulse' : ''
-                  }`} 
-                />
-                <div className="text-xs text-white font-medium leading-tight">
-                  {section.label.split(' ').map((word, i) => (
-                    <div key={i}>{word}</div>
-                  ))}
+              <CardContent className="p-3 text-center">
+                <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${node.color} flex items-center justify-center mb-1 transition-all duration-300 ${isActive ? 'animate-pulse' : ''}`}>
+                  <Icon className="w-4 h-4 text-white" />
                 </div>
-              </div>
-              
-              {/* Pulse Ring Animation */}
-              {isHighlighted && (
-                <>
-                  <div className="absolute inset-0 border border-white/30 rounded-lg animate-pulse-ring"></div>
-                  <div className="absolute inset-0 border border-white/20 rounded-lg animate-pulse-ring" style={{animationDelay: '0.5s'}}></div>
-                </>
-              )}
+                <h4 className="text-white text-xs font-medium leading-tight">{node.title}</h4>
+              </CardContent>
             </Card>
 
-            {/* Description Tooltip */}
-            {isHovered && (
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-black/80 backdrop-blur-sm text-white text-xs rounded-lg border border-white/20 whitespace-nowrap z-50">
-                {section.description}
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+            {/* Floating Stats */}
+            {isActive && (
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-30">
+                <Card className="w-32 border border-white/20 bg-gradient-to-br from-black/80 via-black/60 to-transparent backdrop-blur-xl">
+                  <CardContent className="p-2 text-center">
+                    <p className="text-white/90 text-xs mb-1">{node.description}</p>
+                    <div className="space-y-1">
+                      {Object.entries(node.stats).map(([key, value]) => (
+                        <div key={key} className="flex justify-between text-xs">
+                          <span className="text-white/60 capitalize">{key}:</span>
+                          <span className="text-cyan-400">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             )}
           </div>
@@ -307,59 +277,85 @@ export function EcosystemDiagram({ onSectionClick }) {
       })}
 
       {/* Information Panel */}
-      <div className="absolute bottom-4 left-4 right-4">
-        <Card className="border border-white/20 bg-gradient-to-r from-white/10 via-white/5 to-transparent backdrop-blur-xl p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-center">
-                <div className="text-lg text-cyan-400">6</div>
-                <div className="text-xs text-white/60">Core Functions</div>
+      <div className="absolute bottom-4 left-4 right-4 z-20">
+        <Card className="border border-white/20 bg-gradient-to-br from-black/60 via-black/40 to-transparent backdrop-blur-xl">
+          <CardContent className="p-4">
+            {activeNode ? (
+              <div className="space-y-2">
+                {(() => {
+                  const node = ecosystemNodes.find(n => n.id === activeNode);
+                  const Icon = node.icon;
+                  return (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${node.color} flex items-center justify-center`}>
+                          <Icon className="w-3 h-3 text-white" />
+                        </div>
+                        <h3 className="text-white font-medium">{node.title}</h3>
+                        <Button
+                          size="sm"
+                          onClick={() => onSectionSelect(node.id)}
+                          className="ml-auto bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white"
+                        >
+                          <ArrowRight className="w-3 h-3 mr-1" />
+                          Explore
+                        </Button>
+                      </div>
+                      <p className="text-white/70 text-sm">{node.description}</p>
+                      <div className="grid grid-cols-2 gap-4 mt-2">
+                        {Object.entries(node.stats).map(([key, value]) => (
+                          <div key={key} className="text-center">
+                            <div className="text-cyan-400 font-medium">{value}</div>
+                            <div className="text-white/60 text-xs capitalize">{key}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
-              <div className="text-center">
-                <div className="text-lg text-emerald-400">AI</div>
-                <div className="text-xs text-white/60">Powered</div>
+            ) : (
+              <div className="text-center space-y-2">
+                <div className="flex items-center justify-center gap-2">
+                  <Brain className="w-5 h-5 text-cyan-400" />
+                  <h3 className="text-white font-medium">FactVerse Ecosystem</h3>
+                </div>
+                <p className="text-white/70 text-sm">
+                  Click on any component to explore how our AI-powered verification system works
+                </p>
+                <div className="flex items-center justify-center gap-4 text-xs text-white/60 mt-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span>Active Processing</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Eye className="w-3 h-3" />
+                    <span>Real-time Analysis</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>24/7 Monitoring</span>
+                  </div>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-lg text-purple-400">24/7</div>
-                <div className="text-xs text-white/60">Monitoring</div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-              <span className="text-white/70 text-sm">System Online</span>
-            </div>
-          </div>
+            )}
+          </CardContent>
         </Card>
       </div>
 
-      {/* Floating Data Points */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-1 h-1 bg-cyan-400/60 rounded-full animate-float"
-          style={{
-            left: `${20 + (i * 10)}%`,
-            top: `${30 + Math.sin(i) * 20}%`,
-            animationDelay: `${i * 0.5}s`,
-            animationDuration: `${3 + i * 0.2}s`
-          }}
-        />
-      ))}
-
-      {/* Performance Indicators */}
+      {/* Status Indicators */}
       <div className="absolute top-4 right-4 space-y-2">
-        <div className="flex items-center gap-2 text-xs text-white/60">
-          <Clock className="w-3 h-3" />
-          <span>Response: 0.8s</span>
+        <div className="flex items-center gap-2 text-xs text-white/60 bg-black/40 backdrop-blur-xl px-3 py-1 rounded-full border border-white/20">
+          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+          <span>System Online</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-white/60">
-          <TrendingUp className="w-3 h-3 text-emerald-400" />
-          <span>Accuracy: 94%</span>
+        <div className="flex items-center gap-2 text-xs text-white/60 bg-black/40 backdrop-blur-xl px-3 py-1 rounded-full border border-white/20">
+          <Zap className="w-3 h-3 text-cyan-400" />
+          <span>AI Processing</span>
         </div>
-        <div className="flex items-center gap-2 text-xs text-white/60">
-          <Users className="w-3 h-3 text-blue-400" />
-          <span>Active: 1.2k</span>
+        <div className="flex items-center gap-2 text-xs text-white/60 bg-black/40 backdrop-blur-xl px-3 py-1 rounded-full border border-white/20">
+          <Globe className="w-3 h-3 text-purple-400" />
+          <span>Global Coverage</span>
         </div>
       </div>
     </div>
