@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FileText, Filter, Shield, CheckCircle, HelpCircle, Users, Menu, X } from 'lucide-react';
 import { Button } from './components/ui/button.jsx';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx';
 import { Badge } from './components/ui/badge.jsx';
