@@ -30,7 +30,7 @@ import {
   Linkedin,
   Youtube
 } from 'lucide-react';
-import { ImageWithFallback } from './components/figma/ImageWithFallback';
+import  ImageWithFallback  from './components/figma/ImageWithFallback';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
