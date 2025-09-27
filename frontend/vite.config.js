@@ -1,13 +1,28 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      // This is the corrected, modern way to set up the alias
-      "@": new URL("./src", import.meta.url).pathname,
+      "@": path.resolve(__dirname, "./"),
+      "@/components": path.resolve(__dirname, "./components"),
+      "@/styles": path.resolve(__dirname, "./styles"),
+      "@/lib": path.resolve(__dirname, "./lib"),
     },
   },
+  css: {
+    postcss: './postcss.config.js',
+  },
+  server: {
+    port: 3000,
+    open: true,
+    host: true
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    chunkSizeWarningLimit: 1000
+  }
 })
