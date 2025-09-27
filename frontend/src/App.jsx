@@ -10,13 +10,13 @@ import { SummarizeArticles } from './components/SummarizeArticles.jsx';
 import { ValidateFacts } from './components/ValidateFacts.jsx';
 import { UserQuestions } from './components/UserQuestions.jsx';
 import { CrowdFeedback } from './components/CrowdFeedback.jsx';
-import { 
-  Filter, 
-  Shield, 
-  FileText, 
-  CheckCircle, 
-  HelpCircle, 
-  Users, 
+import {
+  Filter,
+  Shield,
+  FileText,
+  CheckCircle,
+  HelpCircle,
+  Users,
   Menu,
   X,
   User,
@@ -30,7 +30,7 @@ import {
   Linkedin,
   Youtube
 } from 'lucide-react';
-import  ImageWithFallback  from './components/figma/ImageWithFallback';
+import ImageWithFallback from './components/figma/ImageWithFallback';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -64,7 +64,7 @@ export default function App() {
         currentStep++;
         const progress = currentStep / steps;
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        
+
         setAnimatedStats({
           verified: Math.floor(targets.verified * easeOut),
           accuracy: Math.floor(targets.accuracy * easeOut),
@@ -317,48 +317,20 @@ export default function App() {
         {/* Home Section */}
         {activeSection === 'home' && (
           <>
-            {/* Hero Section with Background Video */}
+            {/* Hero Section with Blue Background */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-              {/* Background Video */}
-              <div className="absolute inset-0 z-0">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover"
-                  style={{ filter: 'brightness(0.7) contrast(1.1)' }}
-                  onError={(e) => {
-                    // Fallback to image if video fails to load
-                    e.target.style.display = 'none';
-                    const fallbackImg = e.target.nextElementSibling;
-                    if (fallbackImg) fallbackImg.style.display = 'block';
-                  }}
-                >
-                  <source
-                    src="https://player.vimeo.com/external/465522858.sd.mp4?s=b6bb6fb17e2f2a831b61b6b9b3f8f3a7b6e6b0bb&profile_id=164&oauth2_token_id=57447761"
-                    type="video/mp4"
-                  />
-                  <source
-                    src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-                {/* Fallback image for when video fails to load */}
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1668536618600-754ef972b9b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuZXdzcm9vbSUyMGJyb2FkY2FzdCUyMHN0dWRpb3xlbnwxfHx8fDE3NTg1NjE4NDF8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                  alt="News broadcast studio background"
-                  className="w-full h-full object-cover"
-                  style={{ display: 'none', filter: 'brightness(0.7) contrast(1.1)' }}
-                />
-                {/* Enhanced gradient overlay */}
+              
+              {/* Background Color and Overlay */}
+              <div className="absolute inset-0 z-0 bg-slate-900">
+                
+                {/* Optional: You can keep these gradient overlays to add more depth */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-900/70 via-white/20 to-red-900/70"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-red-900/20"></div>
               </div>
 
-              {/* Hero Content Container */}
+              {/* All of your existing content (the "FactVerse" title, buttons, and stat cards) stays in here */}
               <div className="relative z-10 w-full">
+                
                 {/* Main Hero Content - Centered */}
                 <div className="text-center text-white px-4 max-w-4xl mx-auto mb-20">
                   <div className="mb-8">
