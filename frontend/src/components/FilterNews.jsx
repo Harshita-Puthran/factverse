@@ -121,33 +121,33 @@ export function FilterNews() {
             Filter News
           </h1>
         </div>
-        <p className="text-white/70 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
           Advanced filtering system to help you find exactly the news content you need. Filter by source credibility, category, trending status, and more.
         </p>
       </div>
 
       {/* Filter Controls */}
-      <Card className="border border-white/10 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl">
+      <Card className="border border-gray-200 bg-white backdrop-blur-xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <Search className="w-5 h-5 text-cyan-400" />
+          <CardTitle className="flex items-center gap-2 text-gray-800">
+            <Search className="w-5 h-5 text-cyan-600" />
             Search & Filter Controls
           </CardTitle>
-          <CardDescription className="text-white/60">
+          <CardDescription className="text-gray-600">
             Use the controls below to refine your news search
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Search Bar */}
           <div className="space-y-2">
-            <label className="text-white/80 font-medium">Search Articles</label>
+            <label className="text-gray-800 font-medium">Search Articles</label>
             <div className="relative">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-white/50" />
+              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <Input
                 placeholder="Search by title or content..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-cyan-400/50"
+                className="pl-10 bg-gray-50 border-gray-200 text-gray-800 placeholder:text-gray-400 focus:border-cyan-400/50"
               />
             </div>
           </div>
@@ -155,14 +155,14 @@ export function FilterNews() {
           {/* Filter Row */}
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-white/80 font-medium">Category</label>
+              <label className="text-gray-800 font-medium">Category</label>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-cyan-400/50">
+                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-800 focus:border-cyan-400/50">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800/95 border-white/10 backdrop-blur-xl">
+                <SelectContent className="bg-white border-gray-200 backdrop-blur-xl">
                   {categories.map(category => (
-                    <SelectItem key={category} value={category} className="text-white hover:bg-white/10">
+                    <SelectItem key={category} value={category} className="text-gray-800 hover:bg-gray-100">
                       {category}
                     </SelectItem>
                   ))}
@@ -171,14 +171,14 @@ export function FilterNews() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-white/80 font-medium">Source</label>
+              <label className="text-gray-800 font-medium">Source</label>
               <Select value={selectedSource} onValueChange={setSelectedSource}>
-                <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-cyan-400/50">
+                <SelectTrigger className="bg-gray-50 border-gray-200 text-gray-800 focus:border-cyan-400/50">
                   <SelectValue placeholder="Select source" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800/95 border-white/10 backdrop-blur-xl">
+                <SelectContent className="bg-white border-gray-200 backdrop-blur-xl">
                   {sources.map(source => (
-                    <SelectItem key={source} value={source} className="text-white hover:bg-white/10">
+                    <SelectItem key={source} value={source} className="text-gray-800 hover:bg-gray-100">
                       {source}
                     </SelectItem>
                   ))}
@@ -190,8 +190,8 @@ export function FilterNews() {
           {/* Credibility Slider */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-white/80 font-medium">Minimum Credibility Score</label>
-              <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
+              <label className="text-gray-800 font-medium">Minimum Credibility Score</label>
+              <Badge className="bg-cyan-500/20 text-cyan-700 border-cyan-500/30">
                 {credibilityRange[0]}%+
               </Badge>
             </div>
@@ -212,10 +212,10 @@ export function FilterNews() {
                 id="verified"
                 checked={showVerifiedOnly}
                 onCheckedChange={setShowVerifiedOnly}
-                className="border-white/20 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+                className="border-gray-200 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
               />
-              <label htmlFor="verified" className="text-white/80 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-cyan-400" />
+              <label htmlFor="verified" className="text-gray-800 flex items-center gap-2">
+                <Shield className="w-4 h-4 text-cyan-600" />
                 Verified Only
               </label>
             </div>
@@ -225,10 +225,10 @@ export function FilterNews() {
                 id="trending"
                 checked={showTrendingOnly}
                 onCheckedChange={setShowTrendingOnly}
-                className="border-white/20 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                className="border-gray-200 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
               />
-              <label htmlFor="trending" className="text-white/80 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-orange-400" />
+              <label htmlFor="trending" className="text-gray-800 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-orange-600" />
                 Trending Only
               </label>
             </div>
@@ -246,7 +246,7 @@ export function FilterNews() {
             <Button 
               onClick={resetFilters}
               variant="outline"
-              className="border-white/20 text-white hover:bg-white/10"
+              className="border-gray-200 text-gray-800 hover:bg-gray-100"
             >
               Reset All
             </Button>
@@ -256,10 +256,10 @@ export function FilterNews() {
 
       {/* Results Summary */}
       <div className="flex items-center justify-between">
-        <div className="text-white/80">
-          Showing <span className="text-cyan-400 font-medium">{filteredArticles.length}</span> of {mockArticles.length} articles
+        <div className="text-gray-800">
+          Showing <span className="text-cyan-600 font-medium">{filteredArticles.length}</span> of {mockArticles.length} articles
         </div>
-        <Badge className="bg-white/10 text-white/80 border-white/20">
+        <Badge className="bg-gray-100 text-gray-600 border-gray-200">
           <Calendar className="w-3 h-3 mr-1" />
           Last 7 days
         </Badge>
@@ -268,12 +268,12 @@ export function FilterNews() {
       {/* Filtered Articles */}
       <div className="grid gap-4">
         {filteredArticles.length === 0 ? (
-          <Card className="border border-white/10 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl p-8 text-center">
-            <div className="text-white/60 mb-2">No articles match your current filters</div>
+          <Card className="border border-gray-200 bg-white backdrop-blur-xl p-8 text-center">
+            <div className="text-gray-600 mb-2">No articles match your current filters</div>
             <Button 
               onClick={resetFilters}
               variant="outline"
-              className="border-white/20 text-white hover:bg-white/10"
+              className="border-gray-200 text-gray-800 hover:bg-gray-100"
             >
               Reset Filters
             </Button>
@@ -282,7 +282,7 @@ export function FilterNews() {
           filteredArticles.map(article => (
             <Card 
               key={article.id} 
-              className="border border-white/10 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 group cursor-pointer"
+              className="border border-gray-200 bg-white backdrop-blur-xl hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 group cursor-pointer"
             >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-3">
@@ -291,38 +291,38 @@ export function FilterNews() {
                       {article.credibilityScore}% credible
                     </Badge>
                     {article.verified && (
-                      <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                      <Badge className="bg-emerald-500/20 text-emerald-700 border-emerald-500/30">
                         <CheckCircle className="w-3 h-3 mr-1" />
                         Verified
                       </Badge>
                     )}
                     {article.trending && (
-                      <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">
+                      <Badge className="bg-orange-500/20 text-orange-700 border-orange-500/30">
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Trending
                       </Badge>
                     )}
                   </div>
-                  <div className="text-white/50 text-sm">
+                  <div className="text-gray-500 text-sm">
                     {formatDate(article.publishedAt)}
                   </div>
                 </div>
 
-                <h3 className="text-white font-medium mb-2 group-hover:text-cyan-300 transition-colors duration-300">
+                <h3 className="text-gray-800 font-medium mb-2 group-hover:text-cyan-600 transition-colors duration-300">
                   {article.title}
                 </h3>
                 
-                <p className="text-white/70 text-sm mb-4 leading-relaxed">
+                <p className="text-gray-700 text-sm mb-4 leading-relaxed">
                   {article.summary}
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-white/60">
+                  <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span className="flex items-center gap-1">
                       <Shield className="w-3 h-3" />
                       {article.source}
                     </span>
-                    <Badge variant="outline" className="border-white/20 text-white/70">
+                    <Badge variant="outline" className="border-gray-200 text-gray-700">
                       {article.category}
                     </Badge>
                   </div>
@@ -330,7 +330,7 @@ export function FilterNews() {
                   <Button 
                     size="sm"
                     variant="ghost"
-                    className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+                    className="text-cyan-600 hover:text-cyan-500 hover:bg-cyan-500/10"
                   >
                     Read More →
                   </Button>
@@ -342,13 +342,13 @@ export function FilterNews() {
       </div>
 
       {/* Advanced Filters Info */}
-      <Card className="border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 backdrop-blur-xl">
+      <Card className="border border-blue-500/20 bg-blue-50/50 backdrop-blur-xl">
         <CardContent className="p-4">
-          <div className="flex items-center gap-3 text-blue-300">
+          <div className="flex items-center gap-3 text-blue-600">
             <AlertCircle className="w-5 h-5" />
             <div>
               <div className="font-medium">Pro Tip</div>
-              <div className="text-sm text-blue-200/80">
+              <div className="text-sm text-blue-500/80">
                 Use credibility scores above 80% for the most reliable news sources. Verified articles have been fact-checked by our AI system.
               </div>
             </div>

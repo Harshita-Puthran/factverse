@@ -31,22 +31,22 @@ export function DetectFakeNews() {
             Detect Fake News
           </h1>
         </div>
-        <p className="text-white/70 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
           AI-powered analysis to detect misinformation and verify news authenticity
         </p>
       </div>
 
-      <Card className="border border-white/10 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl">
+      <Card className="border border-gray-200 bg-white backdrop-blur-xl">
         <CardHeader>
-          <CardTitle className="text-white">News Analysis</CardTitle>
-          <CardDescription className="text-white/60">
+          <CardTitle className="text-gray-800">News Analysis</CardTitle>
+          <CardDescription className="text-gray-600">
             Enter a news article URL or paste content to analyze
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <textarea
-              className="w-full h-32 p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/50 resize-none"
+              className="w-full h-32 p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder:text-gray-400 resize-none"
               placeholder="Paste news article content or URL here..."
             />
             <Button 
@@ -71,21 +71,21 @@ export function DetectFakeNews() {
           {analysisResult && (
             <div className="mt-6 space-y-4">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-400" />
-                <span className="text-white font-medium">Analysis Complete</span>
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <span className="text-gray-800 font-medium">Analysis Complete</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-white/80">Reliability Score:</span>
-                <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
+                <span className="text-gray-700">Reliability Score:</span>
+                <Badge className="bg-green-500/20 text-green-700 border-green-500/30">
                   {analysisResult.score}%
                 </Badge>
               </div>
               <div className="space-y-2">
-                <span className="text-white/80 font-medium">Key Factors:</span>
+                <span className="text-gray-700 font-medium">Key Factors:</span>
                 <ul className="space-y-1">
                   {analysisResult.factors.map((factor, index) => (
-                    <li key={index} className="text-sm text-white/70 flex items-center gap-2">
-                      <CheckCircle className="w-3 h-3 text-green-400" />
+                    <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
+                      <CheckCircle className="w-3 h-3 text-green-600" />
                       {factor}
                     </li>
                   ))}

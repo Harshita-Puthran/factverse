@@ -14,20 +14,20 @@ export function SummarizeArticles() {
             Summarize Articles
           </h1>
         </div>
-        <p className="text-white/70 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
           Get quick, intelligent summaries of news articles
         </p>
       </div>
 
-      <Card className="border border-white/10 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl">
+      <Card className="border border-gray-200 bg-white backdrop-blur-xl">
         <CardHeader>
-          <CardTitle className="text-white">Article Summarization</CardTitle>
-          <CardDescription className="text-white/60">
+          <CardTitle className="text-gray-800">Article Summarization</CardTitle>
+          <CardDescription className="text-gray-600">
             This feature will provide intelligent article summaries
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-white/70">Article summarization functionality coming soon...</p>
+          <p className="text-gray-700">Article summarization functionality coming soon...</p>
         </CardContent>
       </Card>
     </div>

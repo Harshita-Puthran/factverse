@@ -154,168 +154,196 @@ export default function App() {
       rating: 5
     }
   ];
-
-  if (activeSection !== 'home' && activeSection !== 'features' && activeSection !== 'about' && activeSection !== 'contact') {
-    return (
-      <div className="min-h-screen bg-white">
-        {/* Animated Background */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-red-500/5 animate-pulse"></div>
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        </div>
-
-        {/* Header */}
-        <header className="relative z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200 shadow-lg sticky top-0">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                <span className="text-white font-bold">FV</span>
+  
+  const renderMainContent = () => {
+    switch (activeSection) {
+      case 'filter':
+        return <FilterNews />;
+      case 'detect':
+        return <DetectFakeNews />;
+      case 'summarize':
+        return <SummarizeArticles />;
+      case 'validate':
+        return <ValidateFacts />;
+      case 'questions':
+        return <UserQuestions />;
+      case 'feedback':
+        return <CrowdFeedback />;
+      case 'features':
+        return (
+          <section className="relative py-20 min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-6">Platform Features</h2>
+                <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                  Discover the comprehensive suite of tools that make FactVerse the most trusted
+                  platform for news verification and fact-checking.
+                </p>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">FactVerse</span>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                {features.map((feature) => {
+                  const Icon = feature.icon;
+                  return (
+                    <Card key={feature.id} className="bg-white/90 backdrop-blur-xl border border-blue-200 shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 cursor-pointer group hover:border-blue-300">
+                      <CardHeader>
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:from-blue-500/30 group-hover:to-red-500/30 transition-all duration-300 backdrop-blur-sm group-hover:shadow-lg group-hover:shadow-blue-500/25">
+                          <Icon className={`w-8 h-8 ${feature.color} group-hover:scale-110 transition-transform`} />
+                        </div>
+                        <CardTitle className="text-gray-800 text-xl">{feature.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-gray-600 leading-relaxed mb-4">
+                          {feature.description}
+                        </p>
+                        <Button
+                          onClick={() => setActiveSection(feature.id)}
+                          className="w-full bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105"
+                        >
+                          Try Now
+                          <ChevronRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
-            
-            <nav className="hidden md:flex items-center gap-6">
-              <Button
-                variant="ghost"
-                onClick={() => setActiveSection('home')}
-                className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 backdrop-blur-sm border border-transparent hover:border-blue-200 transition-all duration-300"
-              >
-                Back to Home
-              </Button>
-            </nav>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden text-gray-700 hover:bg-blue-50"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
-          </div>
-
-          {mobileMenuOpen && (
-            <div className="md:hidden bg-white/90 backdrop-blur-xl px-4 py-3 space-y-2 border-t border-gray-200">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setActiveSection('home');
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50"
-              >
-                Back to Home
-              </Button>
+          </section>
+        );
+      case 'about':
+        return (
+          <section className="relative py-20 min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-8 text-center">About FactVerse</h2>
+                
+                <div className="space-y-8 text-gray-700">
+                  <p className="text-xl leading-relaxed text-center">
+                    FactVerse was founded with a simple yet critical mission: to provide the world with
+                    reliable, accurate, and timely fact-checking services in an era of information overload
+                    and digital misinformation.
+                  </p>
+                  
+                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-blue-200 p-8 shadow-lg">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">Our Mission</h3>
+                    <p className="leading-relaxed">
+                      We believe that access to accurate information is a fundamental right. Our platform
+                      combines cutting-edge artificial intelligence with human expertise to create the most
+                      comprehensive fact-checking ecosystem available today.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-red-200 p-8 shadow-lg">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-6">How It Works</h3>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <h4 className="text-lg font-semibold text-blue-600">AI-Powered Analysis</h4>
+                        <p className="leading-relaxed">
+                          Our machine learning algorithms analyze news articles, social media posts,
+                          and other content in real-time, flagging potential misinformation.
+                        </p>
+                      </div>
+                      <div className="space-y-4">
+                        <h4 className="text-lg font-semibold text-red-600">Human Verification</h4>
+                        <p className="leading-relaxed">
+                          Expert fact-checkers review flagged content, providing detailed analysis
+                          and verification against trusted sources.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Our Impact</h3>
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <Card className="bg-white/90 backdrop-blur-xl border border-blue-200 p-6 text-center hover:border-blue-300 transition-all duration-300 shadow-lg">
+                        <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-2">250,000+</div>
+                        <div className="text-gray-600">Articles Verified</div>
+                      </Card>
+                      <Card className="bg-white/90 backdrop-blur-xl border border-green-200 p-6 text-center hover:border-green-300 transition-all duration-300 shadow-lg">
+                        <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">94.2%</div>
+                        <div className="text-gray-600">Accuracy Rate</div>
+                      </Card>
+                      <Card className="bg-white/90 backdrop-blur-xl border border-blue-200 p-6 text-center hover:border-blue-300 transition-all duration-300 shadow-lg">
+                        <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">85,000+</div>
+                        <div className="text-gray-600">Active Users</div>
+                      </Card>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-        </header>
-
-        {/* Dashboard Content */}
-        <main className="relative z-10 container mx-auto px-4 py-8">
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200 p-6">
-            {activeSection === 'filter' && <FilterNews />}
-            {activeSection === 'detect' && <DetectFakeNews />}
-            {activeSection === 'summarize' && <SummarizeArticles />}
-            {activeSection === 'validate' && <ValidateFacts />}
-            {activeSection === 'questions' && <UserQuestions />}
-            {activeSection === 'feedback' && <CrowdFeedback />}
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-red-500/5 animate-pulse"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gray-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '4s' }}></div>
-      </div>
-
-      {/* Fixed Navigation */}
-      <header className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-200 shadow-lg z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-              <span className="text-white font-bold">FV</span>
+          </section>
+        );
+      case 'contact':
+        return (
+          <section className="relative py-20 min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-8 text-center">Contact Us</h2>
+                
+                <div className="grid md:grid-cols-2 gap-12">
+                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-blue-200 p-8 shadow-lg">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-6">Get in Touch</h3>
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-semibold text-blue-600 mb-2">General Inquiries</h4>
+                        <p className="text-gray-600">info@factverse.com</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-blue-600 mb-2">Press & Media</h4>
+                        <p className="text-gray-600">press@factverse.com</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-blue-600 mb-2">Technical Support</h4>
+                        <p className="text-gray-600">support@factverse.com</p>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-blue-600 mb-2">Partnerships</h4>
+                        <p className="text-gray-600">partnerships@factverse.com</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Card className="bg-white/90 backdrop-blur-xl border border-red-200 shadow-2xl">
+                    <CardHeader>
+                      <CardTitle className="text-gray-800 text-xl">Send us a message</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label htmlFor="name" className="text-gray-700">Name</Label>
+                        <Input id="name" placeholder="Your name" className="bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-200" />
+                      </div>
+                      <div>
+                        <Label htmlFor="email" className="text-gray-700">Email</Label>
+                        <Input id="email" type="email" placeholder="your@email.com" className="bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-200" />
+                      </div>
+                      <div>
+                        <Label htmlFor="subject" className="text-gray-700">Subject</Label>
+                        <Input id="subject" placeholder="What's this about?" className="bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-200" />
+                      </div>
+                      <div>
+                        <Label htmlFor="message" className="text-gray-700">Message</Label>
+                        <textarea
+                          id="message"
+                          rows={4}
+                          className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 text-gray-800 placeholder:text-gray-400 transition-all duration-300"
+                          placeholder="Tell us more..."
+                        ></textarea>
+                      </div>
+                      <Button className="w-full bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105">
+                        Send Message
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">FactVerse</span>
-          </div>
-          
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
-                  activeSection === item.id 
-                    ? 'bg-gradient-to-r from-blue-500 to-red-500 text-white border-blue-400 shadow-lg shadow-blue-500/25' 
-                    : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-200 hover:bg-blue-50'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-            <Button
-              onClick={() => setActiveSection('features')}
-              className="bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white px-6 py-2 rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105"
-            >
-              Get Started
-            </Button>
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="md:hidden text-gray-700 hover:bg-blue-50 rounded-xl"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white/90 backdrop-blur-xl px-4 py-3 space-y-2 border-t border-gray-200">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setActiveSection(item.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`block w-full text-left px-4 py-2 rounded-xl transition-all duration-300 ${
-                  activeSection === item.id 
-                    ? 'bg-gradient-to-r from-blue-500 to-red-500 text-white' 
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-            <Button
-              onClick={() => {
-                setActiveSection('features');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white mt-2 rounded-xl"
-            >
-              Get Started
-            </Button>
-          </div>
-        )}
-      </header>
-
-      {/* Main Content */}
-      <main className="pt-16">
-        {/* Home Section */}
-        {activeSection === 'home' && (
+          </section>
+        );
+      default:
+        return (
           <>
             {/* Hero Section with Blue Background */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -749,184 +777,123 @@ export default function App() {
               </div>
             </section>
           </>
-        )}
+        );
+    }
+  };
 
-        {/* Features Section */}
-        {activeSection === 'features' && (
-          <section className="relative py-20 min-h-screen bg-gray-50">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-6">Platform Features</h2>
-                <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-                  Discover the comprehensive suite of tools that make FactVerse the most trusted
-                  platform for news verification and fact-checking.
-                </p>
-              </div>
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-red-500/5 animate-pulse"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gray-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+      </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {features.map((feature) => {
-                  const Icon = feature.icon;
-                  return (
-                    <Card key={feature.id} className="bg-white/90 backdrop-blur-xl border border-blue-200 shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 cursor-pointer group hover:border-blue-300">
-                      <CardHeader>
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-red-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:from-blue-500/30 group-hover:to-red-500/30 transition-all duration-300 backdrop-blur-sm group-hover:shadow-lg group-hover:shadow-blue-500/25">
-                          <Icon className={`w-8 h-8 ${feature.color} group-hover:scale-110 transition-transform`} />
-                        </div>
-                        <CardTitle className="text-gray-800 text-xl">{feature.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 leading-relaxed mb-4">
-                          {feature.description}
-                        </p>
-                        <Button
-                          onClick={() => setActiveSection(feature.id)}
-                          className="w-full bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105"
-                        >
-                          Try Now
-                          <ChevronRight className="w-4 h-4 ml-2" />
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+      {/* Fixed Navigation */}
+      <header className="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-200 shadow-lg z-50">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <span className="text-white font-bold">FV</span>
             </div>
-          </section>
-        )}
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">FactVerse</span>
+          </div>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
+            {activeSection !== 'home' && activeSection !== 'features' && activeSection !== 'about' && activeSection !== 'contact' ? (
+                <Button
+                    variant="ghost"
+                    onClick={() => setActiveSection('home')}
+                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 backdrop-blur-sm border border-transparent hover:border-blue-200 transition-all duration-300"
+                >
+                    Back to Home
+                </Button>
+            ) : (
+                <>
+                    {navItems.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={() => setActiveSection(item.id)}
+                        className={`px-4 py-2 rounded-xl transition-all duration-300 backdrop-blur-sm border ${
+                        activeSection === item.id 
+                            ? 'bg-gradient-to-r from-blue-500 to-red-500 text-white border-blue-400 shadow-lg shadow-blue-500/25' 
+                            : 'text-gray-700 hover:text-blue-600 border-transparent hover:border-blue-200 hover:bg-blue-50'
+                        }`}
+                    >
+                        {item.label}
+                    </button>
+                    ))}
+                    <Button
+                        onClick={() => setActiveSection('features')}
+                        className="bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white px-6 py-2 rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105"
+                    >
+                        Get Started
+                    </Button>
+                </>
+            )}
+          </nav>
 
-        {/* About Section */}
-        {activeSection === 'about' && (
-          <section className="relative py-20 min-h-screen bg-gray-50">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-8 text-center">About FactVerse</h2>
-                
-                <div className="space-y-8 text-gray-700">
-                  <p className="text-xl leading-relaxed text-center">
-                    FactVerse was founded with a simple yet critical mission: to provide the world with
-                    reliable, accurate, and timely fact-checking services in an era of information overload
-                    and digital misinformation.
-                  </p>
-                  
-                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-blue-200 p-8 shadow-lg">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">Our Mission</h3>
-                    <p className="leading-relaxed">
-                      We believe that access to accurate information is a fundamental right. Our platform
-                      combines cutting-edge artificial intelligence with human expertise to create the most
-                      comprehensive fact-checking ecosystem available today.
-                    </p>
-                  </div>
-                  
-                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-red-200 p-8 shadow-lg">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-6">How It Works</h3>
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-semibold text-blue-600">AI-Powered Analysis</h4>
-                        <p className="leading-relaxed">
-                          Our machine learning algorithms analyze news articles, social media posts,
-                          and other content in real-time, flagging potential misinformation.
-                        </p>
-                      </div>
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-semibold text-red-600">Human Verification</h4>
-                        <p className="leading-relaxed">
-                          Expert fact-checkers review flagged content, providing detailed analysis
-                          and verification against trusted sources.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Our Impact</h3>
-                    <div className="grid md:grid-cols-3 gap-6">
-                      <Card className="bg-white/90 backdrop-blur-xl border border-blue-200 p-6 text-center hover:border-blue-300 transition-all duration-300 shadow-lg">
-                        <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-2">250,000+</div>
-                        <div className="text-gray-600">Articles Verified</div>
-                      </Card>
-                      <Card className="bg-white/90 backdrop-blur-xl border border-green-200 p-6 text-center hover:border-green-300 transition-all duration-300 shadow-lg">
-                        <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">94.2%</div>
-                        <div className="text-gray-600">Accuracy Rate</div>
-                      </Card>
-                      <Card className="bg-white/90 backdrop-blur-xl border border-blue-200 p-6 text-center hover:border-blue-300 transition-all duration-300 shadow-lg">
-                        <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">85,000+</div>
-                        <div className="text-gray-600">Active Users</div>
-                      </Card>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden text-gray-700 hover:bg-blue-50 rounded-xl"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+        </div>
 
-        {/* Contact Section */}
-        {activeSection === 'contact' && (
-          <section className="relative py-20 min-h-screen bg-gray-50">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent mb-8 text-center">Contact Us</h2>
-                
-                <div className="grid md:grid-cols-2 gap-12">
-                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-blue-200 p-8 shadow-lg">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-6">Get in Touch</h3>
-                    <div className="space-y-6">
-                      <div>
-                        <h4 className="font-semibold text-blue-600 mb-2">General Inquiries</h4>
-                        <p className="text-gray-600">info@factverse.com</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-blue-600 mb-2">Press & Media</h4>
-                        <p className="text-gray-600">press@factverse.com</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-blue-600 mb-2">Technical Support</h4>
-                        <p className="text-gray-600">support@factverse.com</p>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-blue-600 mb-2">Partnerships</h4>
-                        <p className="text-gray-600">partnerships@factverse.com</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Card className="bg-white/90 backdrop-blur-xl border border-red-200 shadow-2xl">
-                    <CardHeader>
-                      <CardTitle className="text-gray-800 text-xl">Send us a message</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <Label htmlFor="name" className="text-gray-700">Name</Label>
-                        <Input id="name" placeholder="Your name" className="bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-200" />
-                      </div>
-                      <div>
-                        <Label htmlFor="email" className="text-gray-700">Email</Label>
-                        <Input id="email" type="email" placeholder="your@email.com" className="bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-200" />
-                      </div>
-                      <div>
-                        <Label htmlFor="subject" className="text-gray-700">Subject</Label>
-                        <Input id="subject" placeholder="What's this about?" className="bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-200" />
-                      </div>
-                      <div>
-                        <Label htmlFor="message" className="text-gray-700">Message</Label>
-                        <textarea
-                          id="message"
-                          rows={4}
-                          className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 text-gray-800 placeholder:text-gray-400 transition-all duration-300"
-                          placeholder="Tell us more..."
-                        ></textarea>
-                      </div>
-                      <Button className="w-full bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white rounded-xl shadow-lg shadow-blue-500/25 transition-all duration-300 hover:scale-105">
-                        Send Message
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </section>
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white/90 backdrop-blur-xl px-4 py-3 space-y-2 border-t border-gray-200">
+            {activeSection !== 'home' && activeSection !== 'features' && activeSection !== 'about' && activeSection !== 'contact' ? (
+                <Button
+                    variant="ghost"
+                    onClick={() => setActiveSection('home')}
+                    className="w-full text-left text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                >
+                    Back to Home
+                </Button>
+            ) : (
+                <>
+                    {navItems.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={() => {
+                        setActiveSection(item.id);
+                        setMobileMenuOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2 rounded-xl transition-all duration-300 ${
+                        activeSection === item.id 
+                            ? 'bg-gradient-to-r from-blue-500 to-red-500 text-white' 
+                            : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                        }`}
+                    >
+                        {item.label}
+                    </button>
+                    ))}
+                    <Button
+                    onClick={() => {
+                        setActiveSection('features');
+                        setMobileMenuOpen(false);
+                    }}
+                    className="w-full bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white mt-2 rounded-xl"
+                    >
+                    Get Started
+                    </Button>
+                </>
+            )}
+          </div>
         )}
+      </header>
 
+      {/* Main Content */}
+      <main className="pt-16">
+        {renderMainContent()}
       </main>
 
       {/* Footer */}

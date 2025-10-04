@@ -14,20 +14,20 @@ export function UserQuestions() {
             User Questions
           </h1>
         </div>
-        <p className="text-white/70 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
           Community-driven Q&A and discussions
         </p>
       </div>
 
-      <Card className="border border-white/10 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl">
+      <Card className="border border-gray-200 bg-white backdrop-blur-xl">
         <CardHeader>
-          <CardTitle className="text-white">Community Q&A</CardTitle>
-          <CardDescription className="text-white/60">
+          <CardTitle className="text-gray-800">Community Q&A</CardTitle>
+          <CardDescription className="text-gray-600">
             This feature will provide community-driven questions and answers
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-white/70">User questions functionality coming soon...</p>
+          <p className="text-gray-700">User questions functionality coming soon...</p>
         </CardContent>
       </Card>
     </div>

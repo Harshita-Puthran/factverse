@@ -14,20 +14,20 @@ export function CrowdFeedback() {
             Crowd Feedback
           </h1>
         </div>
-        <p className="text-white/70 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
           Collaborative fact-checking and community ratings
         </p>
       </div>
 
-      <Card className="border border-white/10 bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-xl">
+      <Card className="border border-gray-200 bg-white backdrop-blur-xl">
         <CardHeader>
-          <CardTitle className="text-white">Community Feedback</CardTitle>
-          <CardDescription className="text-white/60">
+          <CardTitle className="text-gray-800">Community Feedback</CardTitle>
+          <CardDescription className="text-gray-600">
             This feature will provide collaborative fact-checking and ratings
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-white/70">Crowd feedback functionality coming soon...</p>
+          <p className="text-gray-700">Crowd feedback functionality coming soon...</p>
         </CardContent>
       </Card>
     </div>
