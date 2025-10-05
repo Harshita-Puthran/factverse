@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card.jsx';
 import { Button } from './ui/button.jsx';
 import { Input } from './ui/input.jsx';
@@ -6,83 +6,91 @@ import { Badge } from './ui/badge.jsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select.jsx';
 import { Checkbox } from './ui/checkbox.jsx';
 import { Slider } from './ui/slider.jsx';
-import { Filter, Search, Calendar, TrendingUp, Shield, AlertCircle, CheckCircle } from 'lucide-react';
+import { Filter, Search, Calendar, TrendingUp, Shield, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
-const mockArticles = [
-  {
-    id: '1',
-    title: 'Climate Change Summit Reaches Historic Agreement',
-    source: 'Reuters',
-    category: 'Environment',
-    credibilityScore: 95,
-    publishedAt: '2024-01-15T10:30:00Z',
-    summary: 'World leaders agree on ambitious carbon reduction targets in landmark climate summit.',
-    verified: true,
-    trending: true
-  },
-  {
-    id: '2',
-    title: 'New AI Technology Breakthrough in Medical Diagnosis',
-    source: 'Nature',
-    category: 'Science',
-    credibilityScore: 92,
-    publishedAt: '2024-01-14T14:20:00Z',
-    summary: 'Researchers develop AI system that can detect diseases with 98% accuracy.',
-    verified: true,
-    trending: false
-  },
-  {
-    id: '3',
-    title: 'Controversial Social Media Policy Changes',
-    source: 'TechBlog',
-    category: 'Technology',
-    credibilityScore: 67,
-    publishedAt: '2024-01-13T09:15:00Z',
-    summary: 'Platform announces new content moderation policies amid user backlash.',
-    verified: false,
-    trending: true
-  },
-  {
-    id: '4',
-    title: 'Economic Recovery Shows Positive Signs',
-    source: 'Financial Times',
-    category: 'Economics',
-    credibilityScore: 88,
-    publishedAt: '2024-01-12T16:45:00Z',
-    summary: 'Latest indicators suggest sustained growth in key economic sectors.',
-    verified: true,
-    trending: false
-  }
-];
-
-const categories = ['All', 'Politics', 'Technology', 'Science', 'Environment', 'Economics', 'Health', 'Sports'];
-const sources = ['All', 'Reuters', 'BBC', 'CNN', 'Nature', 'Financial Times', 'TechBlog', 'Associated Press'];
+const categories = ['All', 'Business', 'Technology', 'Science', 'Environment', 'Health', 'Sports', 'Entertainment'];
+const sources = ['All', 'Reuters', 'BBC', 'CNN', 'Associated Press']; // Simplified sources for example
 
 export function FilterNews() {
+  // --- STATE MANAGEMENT ---
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedSource, setSelectedSource] = useState('All');
   const [credibilityRange, setCredibilityRange] = useState([50]);
   const [showVerifiedOnly, setShowVerifiedOnly] = useState(false);
   const [showTrendingOnly, setShowTrendingOnly] = useState(false);
-  const [filteredArticles, setFilteredArticles] = useState(mockArticles);
+  
+  const [articles, setArticles] = useState([]); // Holds all articles from the API
+  const [filteredArticles, setFilteredArticles] = useState([]); // Holds articles after client-side filtering
+  const [isLoading, setIsLoading] = useState(true); // For loading indicator
 
-  const applyFilters = () => {
-    let filtered = mockArticles.filter(article => {
-      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          article.summary.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'All' || article.category === selectedCategory;
-      const matchesSource = selectedSource === 'All' || article.source === selectedSource;
+  // --- DATA FETCHING & TRANSFORMATION ---
+  const fetchNews = useCallback(async () => {
+    setIsLoading(true);
+    let queryParams = new URLSearchParams();
+
+    // Add params for the API call
+    if (searchTerm) queryParams.append('q', searchTerm);
+    if (selectedCategory !== 'All') queryParams.append('category', selectedCategory);
+    if (selectedSource !== 'All') queryParams.append('source', selectedSource);
+
+    try {
+      const response = await fetch(`/api/news?${queryParams.toString()}`);
+      const data = await response.json();
+
+      // Transform API data to match the structure your component expects
+      const transformedArticles = data.articles.map(article => ({
+        id: article.url, // Use URL as a unique ID
+        title: article.title,
+        source: article.source.name,
+        category: selectedCategory, // API doesn't return category per article, so we use the selected one
+        credibilityScore: Math.floor(Math.random() * (98 - 65 + 1) + 65), // Random score between 65-98
+        publishedAt: article.publishedAt,
+        summary: article.description || 'No summary available.',
+        verified: Math.random() > 0.3, // 70% chance of being "verified"
+        trending: Math.random() > 0.7, // 30% chance of being "trending"
+      }));
+
+      setArticles(transformedArticles);
+    } catch (error) {
+      console.error("Failed to fetch news:", error);
+      setArticles([]); // Clear articles on error
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchTerm, selectedCategory, selectedSource]);
+
+  // --- FILTERING LOGIC ---
+  const applyClientFilters = useCallback(() => {
+    const filtered = articles.filter(article => {
       const matchesCredibility = article.credibilityScore >= credibilityRange[0];
       const matchesVerified = !showVerifiedOnly || article.verified;
       const matchesTrending = !showTrendingOnly || article.trending;
-
-      return matchesSearch && matchesCategory && matchesSource && matchesCredibility && matchesVerified && matchesTrending;
+      return matchesCredibility && matchesVerified && matchesTrending;
     });
-
     setFilteredArticles(filtered);
-  };
+  }, [articles, credibilityRange, showVerifiedOnly, showTrendingOnly]);
 
+
+  // --- SIDE EFFECTS ---
+  // Effect to fetch data when server-side filters change
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      fetchNews();
+    }, 500); // Debounce API calls by 500ms
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [fetchNews]);
+
+  // Effect to apply client-side filters when data or local filters change
+  useEffect(() => {
+    applyClientFilters();
+  }, [applyClientFilters]);
+
+
+  // --- UTILITY FUNCTIONS ---
   const resetFilters = () => {
     setSearchTerm('');
     setSelectedCategory('All');
@@ -90,7 +98,7 @@ export function FilterNews() {
     setCredibilityRange([50]);
     setShowVerifiedOnly(false);
     setShowTrendingOnly(false);
-    setFilteredArticles(mockArticles);
+    // Fetching will be triggered by the state changes
   };
 
   const getCredibilityColor = (score) => {
@@ -105,10 +113,7 @@ export function FilterNews() {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  React.useEffect(() => {
-    applyFilters();
-  }, [searchTerm, selectedCategory, selectedSource, credibilityRange, showVerifiedOnly, showTrendingOnly]);
-
+  // --- JSX RENDER ---
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -237,7 +242,7 @@ export function FilterNews() {
           {/* Action Buttons */}
           <div className="flex gap-3 pt-2">
             <Button 
-              onClick={applyFilters}
+              onClick={fetchNews}
               className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0"
             >
               <Filter className="w-4 h-4 mr-2" />
@@ -253,28 +258,29 @@ export function FilterNews() {
           </div>
         </CardContent>
       </Card>
-
+      
       {/* Results Summary */}
       <div className="flex items-center justify-between">
         <div className="text-gray-800">
-          Showing <span className="text-cyan-600 font-medium">{filteredArticles.length}</span> of {mockArticles.length} articles
+          Showing <span className="text-cyan-600 font-medium">{filteredArticles.length}</span> articles
         </div>
         <Badge className="bg-gray-100 text-gray-600 border-gray-200">
           <Calendar className="w-3 h-3 mr-1" />
-          Last 7 days
+          Live Data
         </Badge>
       </div>
 
       {/* Filtered Articles */}
       <div className="grid gap-4">
-        {filteredArticles.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center p-12">
+            <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
+            <span className="ml-4 text-gray-600">Fetching latest news...</span>
+          </div>
+        ) : filteredArticles.length === 0 ? (
           <Card className="border border-gray-200 bg-white backdrop-blur-xl p-8 text-center">
             <div className="text-gray-600 mb-2">No articles match your current filters</div>
-            <Button 
-              onClick={resetFilters}
-              variant="outline"
-              className="border-gray-200 text-gray-800 hover:bg-gray-100"
-            >
+            <Button onClick={resetFilters} variant="outline" className="border-gray-200 text-gray-800 hover:bg-gray-100">
               Reset Filters
             </Button>
           </Card>
