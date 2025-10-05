@@ -53,34 +53,52 @@ app.get('/api/news', async (req, res) => {
 
 // API endpoint for summarizing articles
 app.post('/api/summarize', async (req, res) => {
+  try {
+    const { articleText } = req.body;
+
+    // Basic validation to ensure text was sent
+    if (!articleText || articleText.trim() === '') {
+      return res.status(400).json({ error: 'Article text is required.' });
+    }
+
+    // Call the Hugging Face API using Axios
+    const response = await axios.post(
+      "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
+      { inputs: articleText },
+      {
+        headers: {
+          "Authorization": `Bearer ${HUGGING_FACE_API_KEY}`
+        }
+      }
+    );
+    
+    // Extract the summary from the response
+    const summary = response.data[0].summary_text;
+    
+    // Send the summary back to the frontend
+    res.json({ summary: summary });
+
+  } catch (error) {
+    console.error('Error summarizing article:', error.response ? error.response.data : error.message);
+    res.status(500).json({ error: 'Failed to summarize article' });
+  }
+});
+
+// NEW: API endpoint for fetching user questions from Stack Exchange
+app.get('/api/questions', async (req, res) => {
+  // You can make the 'site' a query parameter later if you want to switch between sites
+  const site = req.query.site || 'skeptics'; 
+  const url = `https://api.stackexchange.com/2.3/questions?order=desc&sort=activity&site=${site}`;
+
   try {
-    const { articleText } = req.body;
-
-    // Basic validation to ensure text was sent
-    if (!articleText || articleText.trim() === '') {
-      return res.status(400).json({ error: 'Article text is required.' });
-    }
-
-    // Call the Hugging Face API using Axios
-    const response = await axios.post(
-      "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
-      { inputs: articleText },
-      {
-        headers: {
-          "Authorization": `Bearer ${HUGGING_FACE_API_KEY}`
-        }
-      }
-    );
-    
-    // Extract the summary from the response
-    const summary = response.data[0].summary_text;
-    
-    // Send the summary back to the frontend
-    res.json({ summary: summary });
-
+    const response = await axios.get(url, {
+      // Stack Exchange API may send gzipped responses, this helps axios handle it
+      headers: { 'Accept-Encoding': 'gzip,deflate,compress' }
+    });
+    res.json(response.data);
   } catch (error) {
-    console.error('Error summarizing article:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Failed to summarize article' });
+    console.error('Error fetching from Stack Exchange API:', error);
+    res.status(500).json({ error: 'Failed to fetch questions' });
   }
 });
 
