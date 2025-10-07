@@ -1,191 +1,150 @@
-// server.js
-
-// Import required modules
-const express = require('express');
-const path = require('path');
-const axios = require('axios');
-const dotenv = require('dotenv');
+// server.js - FactVerse Q&A Backend using Google Gemini API
 
 // Load environment variables from .env file
-// NOTE: This line loads the environment variables (including OPENAI_API_KEY)
-// from your local .env file when the server starts.
-dotenv.config();
+require('dotenv').config();
+
+// Standard Node.js modules
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+// NOTE: Starting with Node.js v18, the global 'fetch' API is available.
+// The code relies on the native global fetch for making API requests.
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = 3000;
 
-// Set the API keys from the environment variables
-const NEWS_API_KEY = process.env.NEWS_API_KEY;
+// Middleware setup
+app.use(bodyParser.json());
+// Allow requests from all origins for local development (adjust for production)
+app.use(cors()); 
 
-// API key for OpenAI (read from .env)
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY; 
+// --- Configuration ---
+// Ensure this variable name matches what you set in your .env file
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY; 
 
-// Base URL and Model for OpenAI Chat Completions API
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-const OPENAI_MODEL = "gpt-4o-mini"; 
-
-// Middleware to parse JSON bodies from incoming requests
-app.use(express.json());
-
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, '../public')));
-
-/**
- * Helper function for making requests to the OpenAI Chat Completions API.
- * @param {string} prompt - The main user query/text.
- * @param {number} maxTokens - The maximum number of tokens for the AI response.
- * @param {string} [systemInstruction=null] - Optional system instruction to guide the AI's persona/behavior.
- * @returns {Promise<string>} The generated text content.
- */
-async function makeOpenAIRequest(prompt, maxTokens, systemInstruction = null) {
-  // Check if API key is present before attempting the request
-  if (!OPENAI_API_KEY) {
-      throw new Error("OPENAI_API_KEY is not configured in the environment.");
-  }
-
-  const messages = [];
-
-  if (systemInstruction) {
-    messages.push({ role: "system", content: systemInstruction });
-  }
-  
-  messages.push({ role: "user", content: prompt });
-
-  const response = await axios.post(
-    OPENAI_API_URL,
-    {
-      model: OPENAI_MODEL,
-      messages: messages,
-      max_tokens: maxTokens,
-      temperature: 0.2 // Keep responses factual
-    },
-    {
-      headers: { 
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      }
-    }
-  );
-
-  // Extract the generated text from the OpenAI response structure
-  return response.data.choices[0].message.content.trim();
+if (!GEMINI_API_KEY) {
+    console.error("FATAL ERROR: GEMINI_API_KEY is not set in the .env file. Please check factverse.env or .env.");
+    // Exit gracefully if the key is missing
 }
 
-// --- API ROUTES ---
+const GEMINI_MODEL = 'gemini-2.5-flash-preview-05-20'; // Fast model optimized for grounded Q&A
 
-// API endpoint for validating facts (now using OpenAI)
-app.post('/api/validate', async (req, res) => {
-  try {
-    const { claim } = req.body;
+/**
+ * Executes the generation request to the Gemini API with Google Search grounding and exponential backoff.
+ * @param {string} userQuery The question from the user.
+ * @returns {Promise<{text: string, sources: Array<{uri: string, title: string}>}>} The generated answer and sources.
+ */
+async function getGroundedAnswer(userQuery) {
+    // 1. Define the system instruction for the AI's persona and output format
+    const systemPrompt = "You are FactVerse, a world-class, grounded Q&A assistant. Answer the user's question concisely and accurately based ONLY on the information you can find using the provided tools. If you use search results, you MUST return the answer followed by a line break and the full citations.";
 
-    if (!claim || claim.trim() === '') {
-      return res.status(400).json({ error: 'Claim text is required.' });
-    }
+    // 2. Define the payload for the generateContent API call
+    const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        
+        // Use Google Search as a grounding tool to get up-to-date information
+        tools: [{ "google_search": {} }],
+        
+        // Apply the system instruction
+        systemInstruction: {
+            parts: [{ text: systemPrompt }]
+        },
+    };
 
-    const systemPrompt = `You are a fact-checker. Analyze the user's claim for factual accuracy. Provide a concise analysis (under 100 words) and conclude with a rating on a new line: "Rating: True", "Rating: False", "Rating: Misleading", or "Rating: Uncertain".`;
-    const userPrompt = `Claim: "${claim}"`;
+    // 3. Implement exponential backoff for the API call
+    const maxRetries = 5;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            // Attempt the API call using the standard global fetch API (available in modern Node.js)
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
-    const analysis = await makeOpenAIRequest(userPrompt, 200, systemPrompt);
+            // Check if response is okay (200-299 status)
+            if (response.ok) {
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
 
-    res.json({ analysis: analysis });
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const text = candidate.content.parts[0].text;
+                    let sources = [];
+                    const groundingMetadata = candidate.groundingMetadata;
 
-  } catch (error) {
-    console.error('Error validating fact with OpenAI:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Failed to get validation from the AI. Check your API key and billing.' });
-  }
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({
+                                uri: attribution.web?.uri,
+                                title: attribution.web?.title,
+                            }))
+                            .filter(source => source.uri && source.title); // Filter out sources without valid URI/title
+                    }
+
+                    return { text, sources };
+                } else {
+                    // Log the detailed error from the Gemini API if content is missing
+                    console.error('Gemini API response missing content or candidate:', JSON.stringify(result, null, 2));
+                    throw new Error('Could not extract valid text from AI response.');
+                }
+            } else if (response.status === 429 && attempt < maxRetries - 1) {
+                // Handle Rate Limit (429) error with exponential backoff
+                const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s, 8s, 16s
+                console.warn(`Rate limit exceeded (429). Retrying in ${delay / 1000}s...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                // Handle other HTTP errors (e.g., 400 Bad Request, 500 Server Error)
+                const errorBody = await response.text();
+                console.error(`Gemini API HTTP Error ${response.status}: ${errorBody}`);
+                throw new Error(`API call failed with status ${response.status}`);
+            }
+        } catch (error) {
+            if (attempt === maxRetries - 1) {
+                console.error('Final attempt failed. Error answering question with Gemini:', error.message);
+                throw new Error('The AI service could not be reached after multiple attempts.');
+            }
+            console.error(`Attempt ${attempt + 1} failed: ${error.message}. Retrying...`);
+        }
+    }
+    throw new Error('Failed to get a response from the Gemini API after all retries.');
+}
+
+// --- API Route ---
+app.post('/ask', async (req, res) => {
+    const { question } = req.body;
+
+    if (!question || typeof question !== 'string' || question.trim() === '') {
+        return res.status(400).json({ error: 'Question is required.' });
+    }
+
+    if (!GEMINI_API_KEY) {
+        return res.status(503).json({ error: 'AI Service is unavailable. API Key is missing. Please check your .env file.' });
+    }
+
+    console.log(`Received question: "${question}"`);
+
+    try {
+        // Use the grounded function to get the answer and sources
+        const { text, sources } = await getGroundedAnswer(question);
+
+        // Send the structured response back to the client
+        res.json({
+            answer: text,
+            sources: sources
+        });
+
+    } catch (error) {
+        // Send a generic error message back to the client
+        res.status(500).json({ 
+            error: error.message || 'An unexpected error occurred while processing your request.' 
+        });
+    }
 });
 
 
-// API endpoint for answering user questions (now using OpenAI)
-app.post('/api/answer-question', async (req, res) => {
-  try {
-    const { question } = req.body;
-
-    if (!question || question.trim() === '') {
-      return res.status(400).json({ error: 'Question text is required.' });
-    }
-
-    const systemPrompt = `You are a helpful and knowledgeable assistant. Answer the following question clearly and concisely.`;
-    const userPrompt = `Question: "${question}"`;
-
-    const answer = await makeOpenAIRequest(userPrompt, 300, systemPrompt);
-
-    res.json({ answer: answer });
-
-  } catch (error) {
-    console.error('Error answering question with OpenAI:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Failed to get an answer from the AI. Check your API key and billing.' });
-  }
-});
-
-
-// API endpoint for fetching news (Original code, unchanged)
-app.get('/api/news', async (req, res) => {
-  const { q, category, source } = req.query;
-  let url;
-
-  if (q) {
-    url = `https://newsapi.org/v2/everything?q=${q}&apiKey=${NEWS_API_KEY}`;
-  } else {
-    url = `https://newsapi.org/v2/top-headlines?apiKey=${NEWS_API_KEY}&language=en`;
-    if (category && category !== 'All') {
-      url += `&category=${category.toLowerCase()}`;
-    }
-    if (source && source !== 'All') {
-      url += `&sources=${source.toLowerCase().replace(/ /g, '-')}`;
-    }
-  }
-
-  try {
-    const response = await axios.get(url);
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error fetching news from API:', error);
-    res.status(500).json({ error: 'Failed to fetch news' });
-  }
-});
-
-// API endpoint for summarizing articles (now using OpenAI)
-app.post('/api/summarize', async (req, res) => {
-  try {
-    const { articleText } = req.body;
-
-    if (!articleText || articleText.trim() === '') {
-      return res.status(400).json({ error: 'Article text is required.' });
-    }
-    
-    // Prompt the chat model to act as a summarizer
-    const systemPrompt = `Summarize the following article text in three to four concise sentences.`;
-    const userPrompt = articleText;
-
-    const summary = await makeOpenAIRequest(userPrompt, 150, systemPrompt);
-
-    res.json({ summary: summary });
-
-  } catch (error) {
-    console.error('Error summarizing article with OpenAI:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Failed to summarize article. Check your API key and billing.' });
-  }
-});
-
-// API endpoint for fetching questions from Stack Exchange (Original code, unchanged)
-app.get('/api/questions', async (req, res) => {
-  const site = req.query.site || 'skeptics';
-  const url = `https://api.stackexchange.com/2.3/questions?order=desc&sort=activity&site=${site}`;
-
-  try {
-    const response = await axios.get(url, {
-      headers: { 'Accept-Encoding': 'gzip,deflate,compress' }
-    });
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error fetching from Stack Exchange API:', error);
-    res.status(500).json({ error: 'Failed to fetch questions' });
-  }
-});
-
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });
