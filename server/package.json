@@ -17,10 +17,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2"
+=======
+    "axios": "^1.12.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0"
+>>>>>>> e5e9a1584d985e8ba229bbe88a7acf3b65f52964
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
