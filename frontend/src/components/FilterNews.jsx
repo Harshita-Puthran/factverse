@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Checkbox } from './ui/checkbox';
 import { Slider } from './ui/slider';
 import { Filter, Search, Calendar, TrendingUp, Shield, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Label } from './ui/label'; // Correctly import the Label component
 
 const categories = ['All', 'Business', 'Technology', 'Science', 'Environment', 'Health', 'Sports', 'Entertainment'];
 const sources = ['All', 'Reuters', 'BBC', 'CNN', 'Associated Press'];
@@ -340,4 +341,3 @@ export function FilterNews() {
     </div>
   );
 }
-
