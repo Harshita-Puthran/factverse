@@ -210,7 +210,7 @@ async function localFakeNewsDetection(articleText, title = '', source = '') {
     let explanation = isFake ? `High likelihood of misinformation (${confidence}% confidence).` : `Likely credible content (${confidence}% confidence).`;
     return { isFake, confidence, explanation, details: { fakeScore, realScore, factors: factors.slice(0, 5) } };
 }
-
+jhfvfkhjv,hmbbjhvh,mbj
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
