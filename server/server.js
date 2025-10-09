@@ -6,6 +6,9 @@ const path = require('path');
 const axios = require('axios');
 const cors = require('cors');
 const dotenv = require('dotenv');
+// FIX: Import the 'sentiment' library
+const Sentiment = require('sentiment');
+
 
 // Load environment variables from .env file
 require('dotenv').config();
@@ -27,8 +30,8 @@ app.use(cors());
 app.use(express.json());
 
 if (!GEMINI_API_KEY) {
-    console.error("FATAL ERROR: GEMINI_API_KEY is not set in the .env file. Please check factverse.env or .env.");
-    process.exit(1);
+    console.error("FATAL ERROR: GEMINI_API_KEY is not set in the .env file. Please check factverse.env or .env.");
+    process.exit(1);
 }
 
 
@@ -149,6 +152,7 @@ app.post('/api/detect-fake-news', async (req, res) => {
     res.status(500).json({ error: 'Failed to analyze article: ' + error.message });
   }
 });
+
 async function localFakeNewsDetection(articleText, title = '', source = '') {
   const text = articleText.toLowerCase();
   const titleLower = title.toLowerCase();
@@ -208,7 +212,8 @@ async function localFakeNewsDetection(articleText, title = '', source = '') {
 
   // 4. SENTIMENT ANALYSIS (WITH ERROR HANDLING)
   try {
-    const sentimentAnalysis = new sentiment();
+    // FIX: Instantiate the Sentiment class
+    const sentimentAnalysis = new Sentiment();
     const sentimentResult = sentimentAnalysis.analyze(articleText);
     
     // Extreme emotional language often indicates fake news
@@ -348,5 +353,6 @@ app.post('/api/questions', (req, res) => {
 
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on http://localhost:${port}`);
 });
+
