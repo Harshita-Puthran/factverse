@@ -588,12 +588,12 @@ export default function App() {
                 {item.label}
               </button>
             ))}
-            <Button
+            {/* <Button
                 onClick={() => setActiveSection('features')}
                 className="bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white px-6 py-2 rounded-xl shadow-md shadow-blue-500/20 transition-all duration-300 hover:scale-105"
             >
                 Get Started
-            </Button>
+            </Button> */}
           </nav>
 
           <Button
