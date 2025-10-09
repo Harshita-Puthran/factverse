@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Button } from './ui/button.jsx';
 import { Textarea } from './ui/textarea.jsx';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar.jsx';
-import { HelpCircle, Send, Loader2, AlertTriangle } from 'lucide-react';
+import { HelpCircle, Send, Loader2, AlertTriangle, Sparkles } from 'lucide-react';
 
 export function UserQuestions() {
   const [questions, setQuestions] = useState([]);
@@ -32,7 +32,7 @@ export function UserQuestions() {
     };
 
     fetchQuestions();
-  }, []); // Empty dependency array means this runs once when the component mounts
+  }, []);
 
   // --- HANDLE SUBMITTING A NEW QUESTION ---
   const handleSubmit = async (e) => {
@@ -56,9 +56,8 @@ export function UserQuestions() {
       }
 
       const createdQuestion = await response.json();
-      // Add the new question to the top of the list locally
       setQuestions([createdQuestion, ...questions]);
-      setNewQuestion(''); // Clear the input field
+      setNewQuestion('');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -71,15 +70,15 @@ export function UserQuestions() {
     if (isLoading) {
       return (
         <div className="flex justify-center items-center p-10">
-          <Loader2 className="w-6 h-6 text-amber-500 animate-spin" />
-          <span className="ml-3 text-gray-600">Loading questions...</span>
+          <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
+          <span className="ml-3 text-slate-400">Loading questions...</span>
         </div>
       );
     }
 
     if (error) {
       return (
-         <div className="flex items-center gap-3 p-4 rounded-md bg-red-500/10 text-red-600">
+         <div className="flex items-center gap-3 p-4 rounded-md bg-red-900/20 text-red-400 border border-red-500/30">
           <AlertTriangle className="w-5 h-5" />
           <p>{error}</p>
         </div>
@@ -88,14 +87,14 @@ export function UserQuestions() {
 
     if (questions.length === 0) {
       return (
-        <div className="text-center p-8 text-gray-500">
+        <div className="text-center p-8 text-slate-500">
           No questions yet. Be the first to ask!
         </div>
       );
     }
 
     return questions.map((q) => (
-      <Card key={q.id} className="border border-gray-200 bg-white/80 backdrop-blur-xl">
+      <Card key={q.id} className="bg-slate-800/50 backdrop-blur-lg border border-slate-700">
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
             <Avatar>
@@ -103,17 +102,20 @@ export function UserQuestions() {
               <AvatarFallback>{q.user.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <p className="font-semibold text-gray-800">{q.user.name}</p>
-              <p className="text-gray-700 mt-1">{q.question}</p>
+              <p className="font-semibold text-white">{q.user.name}</p>
+              <p className="text-slate-300 mt-1">{q.question}</p>
 
               <div className="mt-4 space-y-3">
                 {q.answers.map((ans, index) => (
-                  <div key={index} className="flex items-start gap-3 bg-gray-50/80 p-3 rounded-lg border border-gray-200/50">
-                    <p className="text-xs font-bold text-amber-700 pt-1">{ans.user}:</p>
-                    <p className="text-sm text-gray-600">{ans.text}</p>
+                  <div key={index} className="flex items-start gap-3 bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+                    <p className="text-xs font-bold text-blue-400 pt-1 flex items-center gap-1">
+                      {ans.user === 'FactVerse Bot' && <Sparkles className="w-3 h-3 text-blue-400"/>}
+                      {ans.user}:
+                    </p>
+                    <p className="text-sm text-slate-400">{ans.text}</p>
                   </div>
                 ))}
-                {q.answers.length === 0 && <p className="text-sm text-gray-500 italic">No answers yet.</p>}
+                {q.answers.length === 0 && <p className="text-sm text-slate-500 italic">No answers yet.</p>}
               </div>
             </div>
           </div>
@@ -127,23 +129,23 @@ export function UserQuestions() {
       {/* --- HEADER --- */}
       <div className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-300/30">
-            <HelpCircle className="w-6 h-6 text-amber-300" />
+          <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-red-500/20 border border-blue-300/30">
+            <HelpCircle className="w-6 h-6 text-blue-300" />
           </div>
-          <h1 className="text-3xl font-medium bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-medium bg-gradient-to-r from-blue-400 to-red-400 bg-clip-text text-transparent">
             Community Q&A
           </h1>
         </div>
-        <p className="text-gray-700 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-slate-200 max-w-2xl mx-auto leading-relaxed">
           Engage with a community of fact-checkers and experts. Ask questions, get answers, and help verify information.
         </p>
       </div>
 
       {/* --- SUBMIT QUESTION CARD --- */}
-      <Card className="border border-gray-200 bg-white backdrop-blur-xl">
+      <Card className="bg-slate-800/50 backdrop-blur-xl border border-slate-700">
         <CardHeader>
-          <CardTitle className="text-gray-800">Ask the Community</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-white">Ask the Community</CardTitle>
+          <CardDescription className="text-slate-400">
             Have a question about a news story or a potential piece of misinformation? Post it here.
           </CardDescription>
         </CardHeader>
@@ -151,12 +153,12 @@ export function UserQuestions() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <Textarea
               placeholder="Type your question here..."
-              className="min-h-[100px] bg-gray-50 border-gray-200 text-gray-800"
+              className="min-h-[100px] bg-slate-900 border-slate-600 text-white placeholder:text-slate-500"
               value={newQuestion}
               onChange={(e) => setNewQuestion(e.target.value)}
               disabled={isSubmitting}
             />
-            <Button type="submit" disabled={isSubmitting || !newQuestion.trim()} className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+            <Button type="submit" disabled={isSubmitting || !newQuestion.trim()} className="bg-gradient-to-r from-blue-600 to-red-600 text-white">
               <Send className="w-4 h-4 mr-2" />
               {isSubmitting ? 'Submitting...' : 'Submit Question'}
             </Button>
@@ -166,9 +168,10 @@ export function UserQuestions() {
 
       {/* --- QUESTIONS LIST --- */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-800">Recent Questions</h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-200 to-slate-400 bg-clip-text text-transparent">Recent Questions</h2>
         {renderContent()}
       </div>
     </div>
   );
 }
+
