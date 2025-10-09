@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card.jsx';
 import { CheckCircle, Loader2 } from 'lucide-react';
@@ -239,4 +238,4 @@ export function ValidateFacts() {
 }
 
 
->>>>>>> e5e9a1584d985e8ba229bbe88a7acf3b65f52964
+ e5e9a1584d985e8ba229bbe88a7acf3b65f52964
