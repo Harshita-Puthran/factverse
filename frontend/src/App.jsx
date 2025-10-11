@@ -7,6 +7,7 @@ import { FilterNews } from './components/FilterNews.jsx';
 import { DetectFakeNews } from './components/DetectFakeNews.jsx';
 import { SummarizeArticles } from './components/SummarizeArticles.jsx';
 import { UserQuestions } from './components/UserQuestions.jsx';
+import { ValidateFacts } from './components/ValidateFacts.jsx';
 import { Login } from './components/Login.jsx';
 import { SignUp } from './components/SignUp.jsx'; // Import the SignUp component
 import {
@@ -24,7 +25,8 @@ import {
   Facebook,
   Twitter,
   Linkedin,
-  Youtube
+  Youtube,
+  Search
 } from 'lucide-react';
 
 export default function App() {
@@ -113,6 +115,13 @@ export default function App() {
           color: 'text-purple-400'
         },
         {
+          id: 'validate', 
+          title: 'Validate Facts',
+          description: 'AI-powered fact checking for claims and statements with confidence scoring',
+          icon: Search,    
+          color: 'text-green-400'
+        },
+        {
           id: 'questions',
           title: 'User Questions',
           description: 'Community-driven Q&A and expert fact-checking discussions',
@@ -148,53 +157,55 @@ export default function App() {
             return <FilterNews />;
           case 'detect':
             return <DetectFakeNews />;
+          case 'validate':
+            return <ValidateFacts />;
           case 'summarize':
             return <SummarizeArticles />;
           case 'questions':
             return <UserQuestions />;
           case 'features':
+  return (
+    <section className="relative py-20 min-h-screen bg-slate-900 text-white">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-red-400 bg-clip-text text-transparent mb-6">Platform Features</h2>
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            Discover the comprehensive suite of tools that make FactVerse the most trusted
+            platform for news verification and fact-checking.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {features.map((feature) => {
+            const Icon = feature.icon;
             return (
-              <section className="relative py-20 min-h-screen bg-slate-900 text-white">
-                <div className="container mx-auto px-4">
-                  <div className="text-center mb-16">
-                    <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-red-400 bg-clip-text text-transparent mb-6">Platform Features</h2>
-                    <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                      Discover the comprehensive suite of tools that make FactVerse the most trusted
-                      platform for news verification and fact-checking.
-                    </p>
+              <Card key={feature.id} className="bg-slate-800/50 backdrop-blur-lg border border-slate-700 shadow-xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 cursor-pointer group hover:border-blue-700">
+                <CardHeader>
+                  <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-blue-900 rounded-xl flex items-center justify-center mb-4 border border-slate-600">
+                    <Icon className={`w-8 h-8 ${feature.color} group-hover:scale-110 transition-transform`} />
                   </div>
-    
-                  <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    {features.map((feature) => {
-                      const Icon = feature.icon;
-                      return (
-                        <Card key={feature.id} className="bg-slate-800/50 backdrop-blur-lg border border-slate-700 shadow-xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 cursor-pointer group hover:border-blue-700">
-                          <CardHeader>
-                            <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-blue-900 rounded-xl flex items-center justify-center mb-4 border border-slate-600">
-                              <Icon className={`w-8 h-8 ${feature.color} group-hover:scale-110 transition-transform`} />
-                            </div>
-                            <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-slate-400 leading-relaxed mb-4">
-                              {feature.description}
-                            </p>
-                            <Button
-                              onClick={() => setActiveSection(feature.id)}
-                              className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-105"
-                            >
-                              Try Now
-                              <ChevronRight className="w-4 h-4 ml-2" />
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </div>
-              </section>
+                  <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-400 leading-relaxed mb-4">
+                    {feature.description}
+                  </p>
+                  <Button
+                    onClick={() => setActiveSection(feature.id)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-105"
+                  >
+                    Try Now
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </CardContent>
+              </Card>
             );
-          case 'about':
+          })}
+        </div>
+      </div>
+    </section>
+  );       
+                    case 'about':
             return (
               <section className="relative py-20 min-h-screen bg-slate-900 text-white">
                 <div className="container mx-auto px-4">

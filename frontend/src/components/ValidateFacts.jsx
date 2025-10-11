@@ -1,152 +1,89 @@
 import React, { useState } from 'react';
-import { CheckCircle, Loader2, AlertTriangle, ShieldCheck } from 'lucide-react';
-
-// --- Single-File UI Components (Resolving Import Errors) ---
-
-// Card Component
-function Card({ className = '', children }) {
-  return (
-    <div className={`rounded-xl border bg-card text-card-foreground shadow ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-function CardHeader({ className = '', children }) {
-  return (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-function CardTitle({ className = '', children }) {
-  return (
-    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`}>
-      {children}
-    </h3>
-  );
-}
-
-function CardDescription({ className = '', children }) {
-  return (
-    <p className={`text-sm text-muted-foreground ${className}`}>
-      {children}
-    </p>
-  );
-}
-
-function CardContent({ className = '', children }) {
-  return (
-    <div className={`p-6 pt-0 ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-// Button Component
-function Button({ className = '', children, onClick, disabled, type = 'button' }) {
-  return (
-    <button
-      type={type}
-      className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 ${className}`}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  );
-}
-
-// Textarea Component
-function Textarea({ className = '', value, onChange, placeholder, disabled }) {
-  return (
-    <textarea
-      className={`flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      disabled={disabled}
-    />
-  );
-}
-
-// Badge Component
-function Badge({ className = '', children }) {
-  return (
-    <div
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
-
-// --- Main Application Component ---
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Search, AlertTriangle, CheckCircle, HelpCircle, Zap, Loader2, ShieldCheck } from 'lucide-react';
 
 export function ValidateFacts() {
-  const [text, setText] = useState('');
-  const [results, setResults] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [claim, setClaim] = useState('');
+  const [validationResult, setValidationResult] = useState(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [error, setError] = useState('');
 
-  /**
-   * Calculates the appropriate Tailwind class for the score badge.
-   * Scores are typically between 0 and 1.
-   * @param {number} score The claim score from the API.
-   * @returns {string} Tailwind classes for badge styling.
-   */
-  const getScoreColor = (score) => {
-    if (score >= 0.7) return 'bg-green-500/20 text-green-700 border-green-500/30';
-    if (score >= 0.4) return 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30';
-    return 'bg-gray-500/20 text-gray-700 border-gray-500/30';
-  };
+  const API_URL = 'http://localhost:3000/api/validate-facts';
 
-  /**
-   * Handles the fact validation submission.
-   * It sends the text to the backend API for claim detection.
-   */
-  const handleValidate = async () => {
-    if (!text.trim()) return;
+  const validateFact = async () => {
+    if (!claim.trim()) {
+      setError('Please enter a claim or statement to validate.');
+      return;
+    }
+    
+    if (claim.length < 10) {
+      setError('Please enter a longer claim for accurate validation.');
+      return;
+    }
 
-    setIsLoading(true);
-    setError(null);
-    setResults(null);
+    setIsValidating(true);
+    setError('');
+    setValidationResult(null);
 
     try {
-      // Using a relative path is better than hardcoding localhost:3000, 
-      // assuming a proxy or co-located service handles the routing.
-      const response = await fetch('/api/validate-fact', {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text: claim }),
       });
 
       if (!response.ok) {
-        let errorMessage = 'The server returned an error. Please try again.';
-        try {
-          // Attempt to get a specific error message from the server
-          const errorData = await response.json();
-          if (errorData && errorData.error) {
-            errorMessage = errorData.error;
-          }
-        } catch (jsonError) {
-          console.error("Could not parse error JSON:", jsonError);
-        }
-        throw new Error(errorMessage);
+        throw new Error(`Validation error: ${response.status}`);
       }
 
-      const data = await response.json();
-      // Expecting data to contain a 'results' array from the backend
-      setResults(data.results || []); 
+      const result = await response.json();
+      setValidationResult(result);
 
     } catch (err) {
-      // Set error state if the fetch or parsing fails
-      setError(err.message);
+      console.error('Error validating fact:', err);
+      setError('Failed to validate fact. Please try again later.');
     } finally {
-      setIsLoading(false);
+      setIsValidating(false);
+    }
+  };
+
+  const clearValidation = () => {
+    setClaim('');
+    setValidationResult(null);
+    setError('');
+  };
+
+  const getRatingColor = (rating) => {
+    switch (rating?.toLowerCase()) {
+      case 'likely true':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'possibly true':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'questionable':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'likely false':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getRatingIcon = (rating) => {
+    switch (rating?.toLowerCase()) {
+      case 'likely true':
+        return <CheckCircle className="w-5 h-5 text-green-600" />;
+      case 'possibly true':
+        return <HelpCircle className="w-5 h-5 text-blue-600" />;
+      case 'questionable':
+        return <AlertTriangle className="w-5 h-5 text-yellow-600" />;
+      case 'likely false':
+        return <AlertTriangle className="w-5 h-5 text-red-600" />;
+      default:
+        return <HelpCircle className="w-5 h-5 text-gray-600" />;
     }
   };
 
@@ -164,41 +101,50 @@ export function ValidateFacts() {
             </h1>
           </div>
           <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Enter a statement or paragraph to check for factual claims using a modern NLP service, powered by the backend.
+            Enter a statement or paragraph to check for factual claims using AI-powered analysis
           </p>
         </div>
 
         {/* Input Card */}
         <Card className="shadow-2xl border-2 border-violet-200/50 bg-white">
           <CardHeader>
-            <CardTitle className="text-gray-900">Text Analyzer</CardTitle>
+            <CardTitle className="text-gray-900">Fact Validator</CardTitle>
             <CardDescription className="text-gray-500">
-              Paste the text you want to analyze below.
+              Enter any claim, statement, or news to check its accuracy
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Textarea
-              placeholder="Enter a sentence like: 'The sky is blue.' or a full article..."
-              className="min-h-[150px] bg-gray-50 border-gray-300 focus:border-violet-500 text-gray-800 transition-all duration-200 rounded-lg"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              disabled={isLoading}
+            <textarea
+              placeholder="Enter a claim to validate (e.g., 'Vaccines contain microchips' or 'Climate change is real')..."
+              className="w-full min-h-[150px] p-3 bg-gray-50 border border-gray-300 rounded-lg focus:border-violet-500 text-gray-800 transition-all duration-200 resize-none"
+              value={claim}
+              onChange={(e) => setClaim(e.target.value)}
+              disabled={isValidating}
             />
-            <Button 
-              onClick={handleValidate} 
-              disabled={isLoading || !text.trim()} 
-              className="w-full sm:w-auto px-6 py-2 rounded-lg text-white font-semibold shadow-lg transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98] 
+            <div className="flex gap-2">
+              <Button 
+                onClick={validateFact}
+                disabled={isValidating || !claim.trim()} 
+                className="px-6 py-2 rounded-lg text-white font-semibold shadow-lg transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98] 
                          bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing Text...
-                </>
-              ) : (
-                'Validate Text'
-              )}
-            </Button>
+              >
+                {isValidating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  'Validate Fact'
+                )}
+              </Button>
+              <Button 
+                onClick={clearValidation}
+                variant="outline"
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Clear
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -214,37 +160,67 @@ export function ValidateFacts() {
         )}
 
         {/* Results Display */}
-        {results && (
+        {validationResult && (
           <Card className="shadow-2xl border-2 border-violet-200/50 bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-900">
                 <ShieldCheck className="w-5 h-5 text-violet-600"/>
-                Validation Results ({results.length} Claims Found)
+                Validation Result
               </CardTitle>
               <CardDescription className="text-gray-500">
-                Each section represents a sentence or clause identified as a potential factual claim.
+                AI analysis of your claim
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6 divide-y divide-gray-100">
-              {results.length > 0 ? (
-                results.map((result, index) => (
-                  <div key={index} className="pt-4 first:pt-0">
-                    <p className="text-gray-800 italic text-base mb-2 font-medium">"{result.text}"</p>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <Badge className={getScoreColor(result.score)}>
-                        Confidence Score: {(result.score * 100).toFixed(2)}%
-                      </Badge>
-                      <span className={`text-sm font-semibold ${result.score >= 0.5 ? 'text-violet-700' : 'text-gray-500'}`}>
-                        {result.score >= 0.5 ? 'High Likelihood of Check-worthy Claim' : 'Low Likelihood Factual Statement'}
-                      </span>
-                    </div>
+            <CardContent className="space-y-6">
+              <div className="flex items-center gap-3">
+                {getRatingIcon(validationResult.rating)}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <Badge className={`${getRatingColor(validationResult.rating)} font-medium`}>
+                      {validationResult.rating}
+                    </Badge>
+                    <Badge variant="outline" className="bg-white">
+                      {validationResult.confidence}% Confidence
+                    </Badge>
                   </div>
-                ))
-              ) : (
-                <p className="text-gray-600 p-4 bg-gray-50 rounded-lg">
-                  No factual claims were clearly detected in the text provided, or the text was too short/simple.
-                </p>
-              )}
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium text-gray-700">Original Claim:</span>
+                  <p className="text-gray-900 mt-1 bg-gray-50 p-3 rounded border text-sm">{validationResult.claim}</p>
+                </div>
+                
+                <div>
+                  <span className="text-sm font-medium text-gray-700">Analysis:</span>
+                  <p className="text-gray-700 mt-1">{validationResult.explanation}</p>
+                </div>
+                
+                {validationResult.evidence && validationResult.evidence.length > 0 && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">Key Findings:</span>
+                    <ul className="mt-2 space-y-1">
+                      {validationResult.evidence.map((item, index) => (
+                        <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                          <div className="w-1 h-1 bg-gray-400 rounded-full mt-2 flex-shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {validationResult.details && (
+                  <div className="text-xs text-gray-500 border-t pt-2">
+                    <span className="font-medium">Analysis Method: </span>
+                    {validationResult.details.analysisMethod}
+                    {validationResult.details.source && (
+                      <span> • Source: {validationResult.details.source}</span>
+                    )}
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         )}
@@ -253,5 +229,4 @@ export function ValidateFacts() {
   );
 }
 
-// Export the component as the default export to satisfy common application entry points
 export default ValidateFacts;
