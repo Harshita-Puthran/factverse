@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
-import { Input } from './components/ui/input';
-import { Label } from './components/ui/label';
+import { Button } from './components/ui/button.jsx';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card.jsx';
+import { Input } from './components/ui/input.jsx';
+import { Label } from './components/ui/label.jsx';
 import { FilterNews } from './components/FilterNews.jsx';
 import { DetectFakeNews } from './components/DetectFakeNews.jsx';
 import { SummarizeArticles } from './components/SummarizeArticles.jsx';
 import { UserQuestions } from './components/UserQuestions.jsx';
-import { ValidateFacts } from './components/ValidateFacts.jsx';
 import { Login } from './components/Login.jsx';
-import { SignUp } from './components/SignUp.jsx'; // Import the SignUp component
+import { SignUp } from './components/SignUp.jsx';
+import { FactReferenceLinkGenerator } from './components/FactReferenceLinkGenerator.jsx';
 import {
   Filter,
   Shield,
@@ -26,14 +26,15 @@ import {
   Twitter,
   Linkedin,
   Youtube,
-  Search
+  Search,
+  Link as LinkIcon
 } from 'lucide-react';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false); // State for the sign-up modal
+  const [showSignUp, setShowSignUp] = useState(false);
   const [animatedStats, setAnimatedStats] = useState({
     verified: 0,
     accuracy: 0,
@@ -41,7 +42,6 @@ export default function App() {
     sources: 0
   });
 
-  // Handlers to switch between login and sign-up modals
   const handleSwitchToSignUp = () => {
     setShowLogin(false);
     setShowSignUp(true);
@@ -52,9 +52,6 @@ export default function App() {
     setShowLogin(true);
   };
 
-  // The rest of your code (useEffect, navItems, features, etc.) remains the same...
-
-    // Animated stats
     useEffect(() => {
         if (activeSection === 'home') {
           const targets = { verified: 250000, accuracy: 94, users: 85000, sources: 450 };
@@ -115,18 +112,18 @@ export default function App() {
           color: 'text-purple-400'
         },
         {
-          id: 'validate', 
-          title: 'Validate Facts',
-          description: 'AI-powered fact checking for claims and statements with confidence scoring',
-          icon: Search,    
-          color: 'text-green-400'
-        },
-        {
           id: 'questions',
           title: 'User Questions',
           description: 'Community-driven Q&A and expert fact-checking discussions',
           icon: HelpCircle,
           color: 'text-amber-400'
+        },
+        {
+          id: 'reference-links',
+          title: 'Reference Link Generator',
+          description: 'Generate credible reference links from Wikipedia for any topic.',
+          icon: LinkIcon,
+          color: 'text-cyan-400'
         },
       ];
     
@@ -157,55 +154,57 @@ export default function App() {
             return <FilterNews />;
           case 'detect':
             return <DetectFakeNews />;
-          case 'validate':
-            return <ValidateFacts />;
           case 'summarize':
             return <SummarizeArticles />;
           case 'questions':
             return <UserQuestions />;
+          case 'reference-links':
+            return <FactReferenceLinkGenerator />;
           case 'features':
-  return (
-    <section className="relative py-20 min-h-screen bg-slate-900 text-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-red-400 bg-clip-text text-transparent mb-6">Platform Features</h2>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Discover the comprehensive suite of tools that make FactVerse the most trusted
-            platform for news verification and fact-checking.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {features.map((feature) => {
-            const Icon = feature.icon;
             return (
-              <Card key={feature.id} className="bg-slate-800/50 backdrop-blur-lg border border-slate-700 shadow-xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 cursor-pointer group hover:border-blue-700">
-                <CardHeader>
-                  <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-blue-900 rounded-xl flex items-center justify-center mb-4 border border-slate-600">
-                    <Icon className={`w-8 h-8 ${feature.color} group-hover:scale-110 transition-transform`} />
+              <section className="relative py-20 min-h-screen bg-slate-900 text-white">
+                <div className="container mx-auto px-4">
+                  <div className="text-center mb-16">
+                    <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-red-400 bg-clip-text text-transparent mb-6">Platform Features</h2>
+                    <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                      Discover the comprehensive suite of tools that make FactVerse the most trusted
+                      platform for news verification and fact-checking.
+                    </p>
                   </div>
-                  <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-400 leading-relaxed mb-4">
-                    {feature.description}
-                  </p>
-                  <Button
-                    onClick={() => setActiveSection(feature.id)}
-                    className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-105"
-                  >
-                    Try Now
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );       
-                    case 'about':
+
+                  <div className="flex flex-wrap gap-8 justify-center max-w-6xl mx-auto">
+                    {features.map((feature) => {
+                      const Icon = feature.icon;
+                      return (
+                        <div key={feature.id} className="w-full sm:w-1/2 md:w-1/3 lg:w-[calc(33.333%-2rem)] flex">
+                            <Card className="bg-slate-800/50 backdrop-blur-lg border border-slate-700 shadow-xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 cursor-pointer group hover:border-blue-700 flex flex-col w-full">
+                              <CardHeader>
+                                <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-blue-900 rounded-xl flex items-center justify-center mb-4 border border-slate-600">
+                                  <Icon className={`w-8 h-8 ${feature.color} group-hover:scale-110 transition-transform`} />
+                                </div>
+                                <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
+                              </CardHeader>
+                              <CardContent className="flex-grow flex flex-col">
+                                <p className="text-slate-400 leading-relaxed mb-4 flex-grow">
+                                  {feature.description}
+                                </p>
+                                <Button
+                                  onClick={() => setActiveSection(feature.id)}
+                                  className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-105 mt-auto"
+                                >
+                                  Try Now
+                                  <ChevronRight className="w-4 h-4 ml-2" />
+                                </Button>
+                              </CardContent>
+                            </Card>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            );       
+          case 'about':
             return (
               <section className="relative py-20 min-h-screen bg-slate-900 text-white">
                 <div className="container mx-auto px-4">
@@ -622,12 +621,6 @@ export default function App() {
             >
               Login
             </button>
-            {/* <Button
-                onClick={() => setActiveSection('features')}
-                className="bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white px-6 py-2 rounded-xl shadow-md shadow-blue-500/20 transition-all duration-300 hover:scale-105"
-            >
-                Get Started
-            </Button> */}
           </nav>
 
           <Button
@@ -681,7 +674,6 @@ export default function App() {
       </header>
 
       <main className="pt-16">
-        {/* Render modals based on state */}
         {showLogin && <Login onClose={() => setShowLogin(false)} onSwitchToSignUp={handleSwitchToSignUp} />}
         {showSignUp && <SignUp onClose={() => setShowSignUp(false)} onSwitchToLogin={handleSwitchToLogin} />}
         
@@ -808,3 +800,4 @@ export default function App() {
     </div>
   );
 }
+
